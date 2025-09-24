@@ -9,11 +9,6 @@ interface Props {
 }
 
 const AuthenticationFields = (props: Props) =>{
-    
-
-
-
-    
 
 
     return (
