@@ -8,6 +8,7 @@ import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import { AuthToken, FakeData, User } from "tweeter-shared";
 import AuthenticationFields from "../AuthenticationFields/AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
+import { useUserInfoActions } from "../../userInfo/UserHooks";
 
 interface Props {
   originalUrl?: string;
@@ -20,7 +21,7 @@ const Login = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { updateUserInfo } = useContext(UserInfoActionsContext);
+  const { updateUser } = useUserInfoActions();
   const {  displayErrorMessage } = useMessageActions();
 
   const checkSubmitButtonStatus = (): boolean => {
@@ -39,7 +40,7 @@ const Login = (props: Props) => {
 
       const [user, authToken] = await login(alias, password);
 
-      updateUserInfo(user, user, authToken, rememberMe);
+      updateUser(user, user, authToken, rememberMe);
 
       if (!!props.originalUrl) {
         navigate(props.originalUrl);

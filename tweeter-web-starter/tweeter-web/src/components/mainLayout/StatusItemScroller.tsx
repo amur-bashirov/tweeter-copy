@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import {
   UserInfoContext,
-  UserInfoActionsContext,
 } from "../userInfo/UserInfoContexts";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import { useState, useEffect } from "react";
@@ -9,6 +8,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import {  useParams } from "react-router-dom";
 import StatusItem from "../statusItem/statusItem";
 import { useMessageActions } from "../toaster/MessageHooks";
+import { useUserInfoActions } from "../userInfo/UserHooks";
 
 export const PAGE_SIZE = 10;
 
@@ -34,7 +34,7 @@ const StatusItemScroller = (props: Props) =>{
     setItems((previousItems) => [...previousItems, ...newItems]);
 
   const { displayedUser, authToken } = useContext(UserInfoContext);
-  const { setDisplayedUser } = useContext(UserInfoActionsContext);
+  const { setUser } = useUserInfoActions();
   const { displayedUser: displayedUserAliasParam } = useParams();
 
   // Update the displayed user context variable whenever the displayedUser url parameter changes. This allows browser forward and back buttons to work correctly.
@@ -46,7 +46,7 @@ const StatusItemScroller = (props: Props) =>{
     ) {
       getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
         if (toUser) {
-          setDisplayedUser(toUser);
+          setUser(toUser);
         }
       });
     }
