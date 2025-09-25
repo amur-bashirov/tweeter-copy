@@ -13,8 +13,18 @@ import StatusItem from "../statusItem/statusItem";
 
 export const PAGE_SIZE = 10;
 
+interface Props{
+  itemDescription: string;
+  featureURL: string;
+  loadMoreFeedsStories:(
+    authToken: AuthToken,
+    userAlias: string,
+    pageSize: number,
+    lastItem: Status | null
+  ) => Promise<[Status[], boolean]>;
+}
 
-const StatusItemScroller = () =>{
+const StatusItemScroller = (props: Props) =>{
     const { displayToast } = useContext(ToastActionsContext);
   const [items, setItems] = useState<Status[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
@@ -57,7 +67,7 @@ const StatusItemScroller = () =>{
 
   const loadMoreItems = async (lastItem: Status | null) => {
     try {
-      const [newItems, hasMore] = await loadMoreFeedItems(
+      const [newItems, hasMore] = await props.loadMoreFeedsStories(
         authToken!,
         displayedUser!.alias,
         PAGE_SIZE,
@@ -70,21 +80,13 @@ const StatusItemScroller = () =>{
     } catch (error) {
       displayToast(
         ToastType.Error,
-        `Failed to load feed items because of exception: ${error}`,
+        `Failed to load ${props.itemDescription} items because of exception: ${error}`,
         0
       );
     }
   };
 
-  const loadMoreFeedItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
-  };
+  
 
   
 
@@ -112,7 +114,7 @@ const StatusItemScroller = () =>{
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <StatusItem status={item} featurePath="/feed" />
+            <StatusItem status={item} featurePath={props.featureURL} />
           </div>
         ))}
       </InfiniteScroll>
