@@ -1,7 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
-import { AuthToken, User, FakeData } from "tweeter-shared";
-import { useMessageActions } from "../toaster/MessageHooks";
-import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
+import { Link} from "react-router-dom";
+import {  User } from "tweeter-shared";
+
 import { useUserNavigation } from "./UserNavigationHooks";
 
 interface Props {
@@ -10,11 +9,6 @@ interface Props {
 }
 
 const UserItem = (props: Props) => {
-  const {  displayErrorMessage } = useMessageActions();
-  const { displayedUser, authToken } = useUserInfoContext();
-  const { setUser } = useUserInfoActions();
-
-  const navigate = useNavigate();
 
   const {navigateToUser} = useUserNavigation();
 
