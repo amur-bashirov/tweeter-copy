@@ -1,8 +1,7 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link} from "react-router-dom"
 import Post from "./Post"
-import {  Status, User, AuthToken, FakeData, } from "tweeter-shared";
-import { useMessageActions } from "../toaster/MessageHooks";
-import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
+import {  Status } from "tweeter-shared";
+import { useUserNavigation } from "../userItem/UserNavigationHooks";
 
 interface Props {
   status: Status;
@@ -10,46 +9,8 @@ interface Props {
 }
 
 const StatusItem = (props: Props) =>{
-    const navigate = useNavigate();
-    const { displayedUser, authToken } = useUserInfoContext();
-    const { setUser } = useUserInfoActions();
-    const {  displayErrorMessage } = useMessageActions()
 
-    const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-        event.preventDefault();
-    
-        try {
-          const alias = extractAlias(event.target.toString());
-    
-          const toUser = await getUser(authToken!, alias);
-    
-          if (toUser) {
-            if (!toUser.equals(displayedUser!)) {
-              setUser(toUser);
-              navigate(`${props.featurePath}${toUser.alias}`);
-            }
-          }
-        } catch (error) {
-          displayErrorMessage(
-            `Failed to get user because of exception: ${error}`
-          );
-        }
-      };
-    
-
-    const extractAlias = (value: string): string => {
-    const index = value.indexOf("@");
-    return value.substring(index);
-  };
-
-    const getUser = async (
-        authToken: AuthToken,
-        alias: string
-    ): Promise<User | null> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
-    };
-
+    const {navigateToUser} = useUserNavigation();
     return(
         <div className="col bg-light mx-0 px-0">
                 <div className="container px-0">
@@ -70,7 +31,7 @@ const StatusItem = (props: Props) =>{
                         -{" "}
                         <Link
                         to={`${props.featurePath}${props.status.user.alias}`}
-                        onClick={navigateToUser}
+                        onClick={(e) => navigateToUser(e, props.featurePath)}
                         >
                         {props.status.user.alias}
                         </Link>
