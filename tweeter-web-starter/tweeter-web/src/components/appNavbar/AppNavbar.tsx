@@ -20,7 +20,7 @@ const AppNavbar = () => {
       await logout(authToken!);
 
       deleteMessage(loggingOutToastId);
-      clearUser;
+      clearUser();
       navigate("/login");
     } catch (error) {
       displayErrorMessage(
