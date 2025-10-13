@@ -14,6 +14,9 @@ import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import { useUserInfoContext } from "./components/userInfo/UserHooks";
+import { UserItemView } from "./presenters/UserItemPresenter";
+import { FolloweePresenter } from "./presenters/FolloweePresenter";
+import { FollowerPresenter } from "./presenters/FollowerPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfoContext();
@@ -39,25 +42,7 @@ const App = () => {
 const AuthenticatedRoutes = () => {
   const { displayedUser } = useUserInfoContext();
 
-  const loadMoreFollowees = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: User | null
-  ): Promise<[User[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-  };
-
-  const loadMoreFollowers = async (
-  authToken: AuthToken,
-  userAlias: string,
-  pageSize: number,
-  lastItem: User | null
-  ): Promise<[User[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-  };
+  
 
   const loadMoreFeedItems = async (
       authToken: AuthToken,
@@ -105,20 +90,18 @@ const AuthenticatedRoutes = () => {
          path="followees/:displayedUser" 
          element={<UserItemScroller
               key ={displayedUser!.alias}
-              itemDescription="folowees" 
               featureURL="/folowees" 
-              loadMoreUsers={loadMoreFollowees} 
+              presenterFactory={(view: UserItemView) => new FolloweePresenter(view)}
               />}
                />
         <Route 
         path="followers/:displayedUser"
          element={<UserItemScroller 
-         key ={displayedUser!.alias}
-         itemDescription="folowees" 
+         key ={displayedUser!.alias} 
          featureURL="/folowees" 
-         loadMoreUsers={loadMoreFollowers}  
+         presenterFactory={(view: UserItemView) => new FollowerPresenter(view)}
          />}
-          />
+          /> 
         <Route path="logout" element={<Navigate to="/login" />} />
         <Route path="*" element={<Navigate to={`/feed/${displayedUser!.alias}`} />} />
       </Route>

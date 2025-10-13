@@ -1,36 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { AuthToken, FakeData, User } from "tweeter-shared";
+import { User } from "tweeter-shared";
 import { useParams } from "react-router-dom";
 import UserItem from "../userItem/UserItem";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
+import { UserItemPresenter, UserItemView } from "../../presenters/UserItemPresenter";
 
-export const PAGE_SIZE = 10;
 
 interface Props{
-    itemDescription: string,
     featureURL: string,
-    loadMoreUsers: (
-        authToken: AuthToken,
-        userAlias: string,
-        pageSize: number,
-        lastItem: User | null
-    ) => Promise<[User[], boolean]>;
+    presenterFactory: (listener: UserItemView) => UserItemPresenter
 }
 
 const UserItemScroller = (props: Props) =>{
   const {  displayErrorMessage } = useMessageActions()
   const [items, setItems] = useState<User[]>([]);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
-  const [lastItem, setLastItem] = useState<User | null>(null);
 
-  const addItems = (newItems: User[]) =>
-    setItems((previousItems) => [...previousItems, ...newItems]);
+  
 
   const { displayedUser, authToken } = useUserInfoContext();
   const { setUser } = useUserInfoActions();
   const { displayedUser: displayedUserAliasParam } = useParams();
+
+  const listener: UserItemView = {
+    addItems: (newItems: User[]) => setItems((previousItems) => [...previousItems, ...newItems]),
+    displayErrorMessage: displayErrorMessage
+  }
+
+  const presenterRef = useRef<UserItemPresenter | null>(null)
+  if (!presenterRef.current){
+    presenterRef.current = props.presenterFactory(listener);
+  }
+  
+  
 
   // Update the displayed user context variable whenever the displayedUser url parameter changes. This allows browser forward and back buttons to work correctly.
   useEffect(() => {
@@ -39,7 +42,7 @@ const UserItemScroller = (props: Props) =>{
       displayedUserAliasParam &&
       displayedUserAliasParam != displayedUser!.alias
     ) {
-      getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
+      presenterRef.current!.getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
         if (toUser) {
           setUser(toUser);
         }
@@ -50,49 +53,26 @@ const UserItemScroller = (props: Props) =>{
   // Initialize the component whenever the displayed user changes
   useEffect(() => {
     reset();
-    loadMoreItems(null);
+    loadMoreItems();
   }, [displayedUser]);
 
   const reset = async () => {
     setItems(() => []);
-    setLastItem(() => null);
-    setHasMoreItems(() => true);
+    presenterRef.current!.reset();
   };
 
-  const loadMoreItems = async (lastItem: User | null) => {
-    try {
-      const [newItems, hasMore] = await props.loadMoreUsers(
-        authToken!,
-        displayedUser!.alias,
-        PAGE_SIZE,
-        lastItem
-      );
-
-      setHasMoreItems(() => hasMore);
-      setLastItem(() => newItems[newItems.length - 1]);
-      addItems(newItems);
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to load ${props.itemDescription} because of exception: ${error}`,
-      );
-    }
+  const loadMoreItems = async () => {
+    presenterRef.current!.loadMoreItems(authToken!, displayedUser!.alias);
   };
 
-  const getUser = async (
-    authToken: AuthToken,
-    alias: string
-  ): Promise<User | null> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
-  };
 
   return (
     <div className="container px-0 overflow-visible vh-100">
       <InfiniteScroll
         className="pr-0 mr-0"
         dataLength={items.length}
-        next={() => loadMoreItems(lastItem)}
-        hasMore={hasMoreItems}
+        next={loadMoreItems}
+        hasMore={presenterRef.current!.getHasMoreItems()}
         loader={<h4>Loading...</h4>}
       >
         {items.map((item, index) => (
