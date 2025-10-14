@@ -1,5 +1,6 @@
 import { AuthToken } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
+import { useNavigate } from "react-router-dom";
 
 
 export interface AppNavbarView{
@@ -9,7 +10,6 @@ export interface AppNavbarView{
         bootstrapClasses?: string) => string;
     displayErrorMessage: (message: string) => string;
     deleteMessage: (id: string) => void;
-    navigate: (path: string) => void,
     clearUser: () => void
             
 }
@@ -19,6 +19,7 @@ export class AppNavbarPresenter{
 
     private service: UserService;
     private view: AppNavbarView;
+    private navigate = useNavigate();
     
     public constructor( view: AppNavbarView){
         this.service = new UserService();
@@ -33,7 +34,7 @@ export class AppNavbarPresenter{
 
         this.view.deleteMessage(loggingOutToastId);
         this.view.clearUser();
-        this.view.navigate("/login");
+        this.navigate("/login");
         } catch (error) {
         this.view.displayErrorMessage(
             `Failed to log user out because of exception: ${error}`

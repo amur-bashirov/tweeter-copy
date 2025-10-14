@@ -1,26 +1,27 @@
 
 import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model.service/FollowService";
+import { useNavigate } from "react-router-dom";
 
 
 
 export interface UserInfoView{
     setIsLoading: (value: boolean) => void;
     displayErrorMessage: (message: string) => string;
-    navigate: (path: string) => void,
     displayInfoMessage: (
         message: string,
         duration: number,
         bootstrapClasses?: string) => string,
     deleteMessage: (id: string) => void;
-    setIsFollower: React.Dispatch<React.SetStateAction<boolean>>;
-    setFollowerCount: React.Dispatch<React.SetStateAction<number>>;
-    setFolloweeCount: React.Dispatch<React.SetStateAction<number>>;
+    setIsFollower:(isfollower: boolean) => void;
+    setFollowerCount: (count : number) => void;
+    setFolloweeCount: (count: number) => void;
+    setUser: (user: User) => void;
 }
 
 
 export class UserInfoPresenter{
-
+    private navigate = useNavigate();
     private service: FollowService;
         private view: UserInfoView;
     
@@ -139,6 +140,17 @@ export class UserInfoPresenter{
         `Failed to get followers count because of exception: ${error}`
       );
     }
+  };
+
+  public getBaseUrl(): string {
+    const segments = location.pathname.split("/@");
+    return segments.length > 1 ? segments[0] : "/";
+  };
+
+
+  public switchToLoggedInUser( currentUser: User): void {
+    this.view.setUser(currentUser!);
+    this.navigate(`${this.getBaseUrl()}/${currentUser!.alias}`);
   };
 
 

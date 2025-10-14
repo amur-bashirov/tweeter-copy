@@ -1,6 +1,6 @@
 import "./UserInfoComponent.css";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthToken, User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions, useUserInfoContext } from "./UserHooks";
@@ -16,7 +16,6 @@ const UserInfo = () => {
 
   const { currentUser, authToken, displayedUser } = useUserInfoContext();
   const { setUser } = useUserInfoActions();
-  const navigate = useNavigate();
   const location = useLocation();
 
 
@@ -24,11 +23,11 @@ const UserInfo = () => {
     setIsLoading: setIsLoading,
     displayErrorMessage: displayErrorMessage,
     displayInfoMessage: displayInfoMessage,
-    navigate: navigate,
     deleteMessage: deleteMessage,
     setIsFollower: setIsFollower,
     setFollowerCount: setFollowerCount,
-    setFolloweeCount: setFolloweeCount
+    setFolloweeCount: setFolloweeCount,
+    setUser: setUser
   }
 
   const presenterRef = useRef<UserInfoPresenter | null>(null);
@@ -76,13 +75,7 @@ const UserInfo = () => {
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
     event.preventDefault();
-    setUser(currentUser!);
-    navigate(`${getBaseUrl()}/${currentUser!.alias}`);
-  };
-
-  const getBaseUrl = (): string => {
-    const segments = location.pathname.split("/@");
-    return segments.length > 1 ? segments[0] : "/";
+    presenterRef.current!.switchToLoggedInUser(currentUser!);
   };
 
   const followDisplayedUser = async (
