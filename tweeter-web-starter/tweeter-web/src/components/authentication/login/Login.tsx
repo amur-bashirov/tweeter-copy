@@ -1,14 +1,14 @@
 import "./Login.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import AuthenticationFields from "../AuthenticationFields/AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
 import { useUserInfoActions } from "../../userInfo/UserHooks";
+import { LoginView, LoginPresenter } from "../../../presenters/LoginPresenter";
 
-interface Props {
+export interface Props {
   originalUrl?: string;
 }
 
@@ -22,50 +22,36 @@ const Login = (props: Props) => {
   const { updateUser } = useUserInfoActions();
   const {  displayErrorMessage } = useMessageActions();
 
+
+  const view: LoginView = {
+    setIsLoading: setIsLoading,
+    displayErrorMessage: displayErrorMessage,
+    navigate: navigate,
+    updateUser: updateUser
+  };
+  
+  const presenterRef = useRef<LoginPresenter | null>(null);
+    if (!presenterRef.current) {
+      presenterRef.current = new LoginPresenter(view);
+    }
+
   const checkSubmitButtonStatus = (): boolean => {
     return !alias || !password;
   };
 
   const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key == "Enter" && !checkSubmitButtonStatus()) {
-      doLogin();
+      doLogin(alias, password, props, rememberMe);
     }
   };
 
-  const doLogin = async () => {
-    try {
-      setIsLoading(true);
-
-      const [user, authToken] = await login(alias, password);
-
-      updateUser(user, user, authToken, rememberMe);
-
-      if (!!props.originalUrl) {
-        navigate(props.originalUrl);
-      } else {
-        navigate(`/feed/${user.alias}`);
-      }
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`,
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const login = async (
+  const doLogin = async (
     alias: string,
-    password: string
-  ): Promise<[User, AuthToken]> => {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user, FakeData.instance.authToken];
+    password: string,
+    props: Props,
+    rememberMe: boolean
+  ) => {
+    presenterRef.current!.doLogin(alias, password, props, rememberMe)
   };
 
   const inputFieldFactory = () => {
@@ -98,7 +84,7 @@ const Login = (props: Props) => {
       setRememberMe={setRememberMe}
       submitButtonDisabled={checkSubmitButtonStatus}
       isLoading={isLoading}
-      submit={doLogin}
+      submit={() => doLogin(alias, password, props, rememberMe)}
     />
   );
 };
