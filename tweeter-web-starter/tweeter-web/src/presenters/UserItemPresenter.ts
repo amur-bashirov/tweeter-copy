@@ -24,7 +24,7 @@ export abstract class UserItemPresenter {
             return this._view;
         }
 
-        public getHasMoreItems(){
+        public get hasMoreItems(){
             return this._hasMoreItems;
         }
 
@@ -50,7 +50,6 @@ export abstract class UserItemPresenter {
             alias: string
           ): Promise<User | null>{
             return this.userService.getUser(authToken, alias)
-            
           };
 
         public abstract loadMoreItems(authToken: AuthToken, userAlias: string): void;
