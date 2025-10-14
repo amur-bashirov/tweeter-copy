@@ -8,7 +8,7 @@ import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
 import { StatusItemView, StatusItemPresenter } from "../../presenters/StatusItemPresenter";
 
 
-export const PAGE_SIZE = 10;
+
 
 interface Props{
   featureURL: string;
@@ -31,8 +31,7 @@ const StatusItemScroller = (props: Props) =>{
     }
   
 
-  const addItems = (newItems: Status[]) =>
-    setItems((previousItems) => [...previousItems, ...newItems]);
+  
 
   const { displayedUser, authToken } = useUserInfoContext();
   const { setUser } = useUserInfoActions();
