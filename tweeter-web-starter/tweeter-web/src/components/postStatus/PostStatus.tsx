@@ -12,10 +12,10 @@ const PostStatus = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const view: PostView = {
-    displayErrorMessage,
-    displayInfoMessage,
-    deleteMessage,
-    setIsLoading,
+    displayErrorMessage : displayErrorMessage,
+    displayInfoMessage: displayInfoMessage,
+    deleteMessage : deleteMessage,
+    setIsLoading: setIsLoading,
     clearPost: () => setPost(""),
   };
 
