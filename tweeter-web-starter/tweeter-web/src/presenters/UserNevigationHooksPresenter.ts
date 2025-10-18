@@ -1,17 +1,17 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
-import { useNavigate } from "react-router-dom";
 
 
 export interface UserNavigationHooksView{
     displayErrorMessage: (message: string) => string;
+    navigate: (path: string) => void,
     setUser: (user: User) => void,
     extractAlias : (value: string) => string 
 }
 
 
 export class UserNavigationHooksPresenter{
-    private navigate = useNavigate();
+
     private service: UserService;
         private view: UserNavigationHooksView;
     
@@ -32,7 +32,7 @@ export class UserNavigationHooksPresenter{
       if (toUser) {
         if (!toUser.equals(displayedUser!)) {
           this.view.setUser(toUser);
-          this.navigate(`${featurePath}/${toUser.alias}`);
+          this.view.navigate(`${featurePath}/${toUser.alias}`);
         }
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 import "./UserInfoComponent.css";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthToken, User } from "tweeter-shared";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions, useUserInfoContext } from "./UserHooks";
@@ -17,6 +17,7 @@ const UserInfo = () => {
   const { currentUser, authToken, displayedUser } = useUserInfoContext();
   const { setUser } = useUserInfoActions();
   const location = useLocation();
+  const navigate = useNavigate();
 
 
   const view: UserInfoView = {
@@ -27,55 +28,35 @@ const UserInfo = () => {
     setIsFollower: setIsFollower,
     setFollowerCount: setFollowerCount,
     setFolloweeCount: setFolloweeCount,
-    setUser: setUser
+    
   }
 
   const presenterRef = useRef<UserInfoPresenter | null>(null);
-    if (!presenterRef.current) {
+    if (presenterRef.current === null) {
       presenterRef.current = new UserInfoPresenter(view);
     }
 
-  if (!displayedUser) {
-    setUser(currentUser!);
-  }
+  // if (!displayedUser) {
+  //   setUser(currentUser!);
+  // }
 
   useEffect(() => {
-    setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
-    setNumbFollowees(authToken!, displayedUser!);
-    setNumbFollowers(authToken!, displayedUser!);
+    if (!displayedUser && currentUser) {
+    setUser(currentUser);
+  }
+    console.log(authToken)
+    console.log(currentUser)
+    console.log(displayedUser)
+    presenterRef.current!.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
+    presenterRef.current!.setNumbFollowers(authToken!, displayedUser!);
+    presenterRef.current!.setNumbFollowees(authToken!, displayedUser!);
+    
   }, [displayedUser]);
 
-  const setIsFollowerStatus = async (
-    authToken: AuthToken,
-    currentUser: User,
-    displayedUser: User
-  ) => {
-    presenterRef.current!.setIsFollowerStatus(authToken, currentUser, displayedUser)
-  };
-
-  
-
-  const setNumbFollowees = async (
-    authToken: AuthToken,
-    displayedUser: User
-  ) => {
-    presenterRef.current!.setNumbFollowees(authToken, displayedUser)
-  };
-
-  
-
-  const setNumbFollowers = async (
-    authToken: AuthToken,
-    displayedUser: User
-  ) => {
-    presenterRef.current!.setNumbFollowers(authToken, displayedUser)
-  };
-
-  
-
-  const switchToLoggedInUser = (event: React.MouseEvent): void => {
+  const switchToLoggedInUser = ( event: React.MouseEvent): void => {
     event.preventDefault();
-    presenterRef.current!.switchToLoggedInUser(currentUser!);
+    setUser(currentUser!);
+    navigate(`${presenterRef.current!.getBaseUrl()}/${currentUser!.alias}`);
   };
 
   const followDisplayedUser = async (

@@ -1,12 +1,12 @@
 
 import { Buffer } from "buffer";
 import { UserService } from "../model.service/UserService";
-import { useNavigate } from "react-router-dom";
 
 
 export interface RegisterView{
     setIsLoading: (value: boolean) => void;
     displayErrorMessage: (message: string) => string;
+    navigate: (path: string) => void,
     updateUser: (user: any, user2: any, authToken: any, rememberMe: boolean) => void,
     setImageUrl: (image: string) =>void;
     setImageFileExtension: (image: string) => void;
@@ -16,7 +16,6 @@ export interface RegisterView{
 export class RegisterPresenter{
     private service: UserService;
     private view: RegisterView;
-    private navigate = useNavigate();
 
     public constructor( view: RegisterView){
         this.service = new UserService();
@@ -43,7 +42,7 @@ export class RegisterPresenter{
       );
 
       this.view.updateUser(user, user, authToken, rememberMe);
-      this.navigate(`/feed/${user.alias}`);
+      this.view.navigate(`/feed/${user.alias}`);
     } catch (error) {
       this.view.displayErrorMessage(
         `Failed to register user because of exception: ${error}`,

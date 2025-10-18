@@ -16,12 +16,11 @@ export interface UserInfoView{
     setIsFollower:(isfollower: boolean) => void;
     setFollowerCount: (count : number) => void;
     setFolloweeCount: (count: number) => void;
-    setUser: (user: User) => void;
 }
 
 
 export class UserInfoPresenter{
-    private navigate = useNavigate();
+  
     private service: FollowService;
         private view: UserInfoView;
     
@@ -148,10 +147,7 @@ export class UserInfoPresenter{
   };
 
 
-  public switchToLoggedInUser( currentUser: User): void {
-    this.view.setUser(currentUser!);
-    this.navigate(`${this.getBaseUrl()}/${currentUser!.alias}`);
-  };
+  
 
 
 

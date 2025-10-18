@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Props } from "../components/authentication/login/Login";
 import { UserService } from "../model.service/UserService";
 
@@ -6,6 +5,7 @@ import { UserService } from "../model.service/UserService";
 export interface LoginView{
     setIsLoading: (value: boolean) => void;
     displayErrorMessage: (message: string) => string;
+    navigate: (path: string) => void,
     updateUser: (user: any, user2: any, authToken: any, rememberMe: boolean) => void
 }
 
@@ -14,7 +14,7 @@ export class LoginPresenter{
 
     private service: UserService;
         private view: LoginView;
-    private navigate = useNavigate();
+    
     public constructor( view: LoginView){
         this.service = new UserService();
         this.view = view;
@@ -32,9 +32,9 @@ export class LoginPresenter{
       this.view.updateUser(user, user, authToken, rememberMe);
 
       if (!!props.originalUrl) {
-        this.navigate(props.originalUrl);
+        this.view.navigate(props.originalUrl);
       } else {
-        this.navigate(`/feed/${user.alias}`);
+        this.view.navigate(`/feed/${user.alias}`);
       }
     } catch (error) {
       this.view.displayErrorMessage(

@@ -1,5 +1,6 @@
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
+import { useNavigate } from "react-router-dom";
 import { UserNavigationHooksPresenter, UserNavigationHooksView } from "../../presenters/UserNevigationHooksPresenter";
 import { useRef } from "react";
 
@@ -10,10 +11,11 @@ export const useUserNavigation = () =>{
   const { displayedUser, authToken } = useUserInfoContext();
   const { setUser } = useUserInfoActions();
 
-  
+  const navigate = useNavigate();
 
   const view: UserNavigationHooksView = {
     displayErrorMessage: displayErrorMessage,
+    navigate: navigate,
     setUser: setUser,
     extractAlias : (value: string): string => { const index = value.indexOf("@"); return value.substring(index);}
 

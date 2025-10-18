@@ -1,7 +1,7 @@
 import "./Login.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import AuthenticationFields from "../AuthenticationFields/AuthenticationFields";
 import { useMessageActions } from "../../toaster/MessageHooks";
@@ -18,7 +18,7 @@ const Login = (props: Props) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-
+  const navigate = useNavigate();
   const { updateUser } = useUserInfoActions();
   const {  displayErrorMessage } = useMessageActions();
 
@@ -26,6 +26,7 @@ const Login = (props: Props) => {
   const view: LoginView = {
     setIsLoading: setIsLoading,
     displayErrorMessage: displayErrorMessage,
+    navigate: navigate,
     updateUser: updateUser
   };
   
