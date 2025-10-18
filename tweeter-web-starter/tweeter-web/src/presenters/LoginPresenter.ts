@@ -1,8 +1,9 @@
 import { Props } from "../components/authentication/login/Login";
 import { UserService } from "../model.service/UserService";
+import { Presenter, View } from "./Presenter";
 
 
-export interface LoginView{
+export interface LoginView extends View{
     setIsLoading: (value: boolean) => void;
     displayErrorMessage: (message: string) => string;
     navigate: (path: string) => void,
@@ -10,22 +11,21 @@ export interface LoginView{
 }
 
 
-export class LoginPresenter{
+export class LoginPresenter extends Presenter <LoginView>{
 
     private service: UserService;
-        private view: LoginView;
     
     public constructor( view: LoginView){
+      super(view)
         this.service = new UserService();
-        this.view = view;
     }
 
 
     
 
     public async doLogin (alias: string, password: string, props: Props, rememberMe: boolean) {
-    try {
-      this.view.setIsLoading(true);
+      await this.doFailureReportingOperation( async () => {
+        this.view.setIsLoading(true);
 
       const [user, authToken] = await this.service.login(alias, password);
 
@@ -36,12 +36,7 @@ export class LoginPresenter{
       } else {
         this.view.navigate(`/feed/${user.alias}`);
       }
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`,
-      );
-    } finally {
+      }, "log user")
       this.view.setIsLoading(false);
-    }
   };
 }

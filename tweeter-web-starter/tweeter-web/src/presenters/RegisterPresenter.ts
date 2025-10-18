@@ -1,11 +1,11 @@
 
 import { Buffer } from "buffer";
 import { UserService } from "../model.service/UserService";
+import { Presenter, View } from "./Presenter";
 
 
-export interface RegisterView{
+export interface RegisterView extends View{
     setIsLoading: (value: boolean) => void;
-    displayErrorMessage: (message: string) => string;
     navigate: (path: string) => void,
     updateUser: (user: any, user2: any, authToken: any, rememberMe: boolean) => void,
     setImageUrl: (image: string) =>void;
@@ -13,13 +13,12 @@ export interface RegisterView{
     setImageBytes: (bytes: Uint8Array) => void;
 }
 
-export class RegisterPresenter{
+export class RegisterPresenter extends Presenter <RegisterView>{
     private service: UserService;
-    private view: RegisterView;
 
     public constructor( view: RegisterView){
+      super(view)
         this.service = new UserService();
-        this.view = view;
     }
 
     
@@ -27,10 +26,8 @@ export class RegisterPresenter{
     public async doRegister(firstName: string, lastName: string, alias: string, password: string,
         imageBytes: Uint8Array, imageFileExtension: string, rememberMe: boolean
      ) {
-
-
-    try {
-      this.view.setIsLoading(true);
+        await this.doFailureReportingOperation( async () => {
+          this.view.setIsLoading(true);
 
       const [user, authToken] = await this.service.register(
         firstName,
@@ -43,13 +40,7 @@ export class RegisterPresenter{
 
       this.view.updateUser(user, user, authToken, rememberMe);
       this.view.navigate(`/feed/${user.alias}`);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`,
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+        }, "register user")
   };
 
 
