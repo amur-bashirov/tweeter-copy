@@ -1,42 +1,42 @@
+import { AuthToken, User } from "tweeter-shared";
 import { Props } from "../components/authentication/login/Login";
 import { UserService } from "../model.service/UserService";
+import { AuthenticatePresenter, AuthenticateView } from "./AuthenticatePresenter";
 import { Presenter, View } from "./Presenter";
 
 
-export interface LoginView extends View{
-    setIsLoading: (value: boolean) => void;
-    displayErrorMessage: (message: string) => string;
-    navigate: (path: string) => void,
-    updateUser: (user: any, user2: any, authToken: any, rememberMe: boolean) => void
+
+export interface LoginView extends AuthenticateView{
+    
 }
 
 
-export class LoginPresenter extends Presenter <LoginView>{
+export class LoginPresenter extends AuthenticatePresenter<LoginView>{
 
-    private service: UserService;
-    
-    public constructor( view: LoginView){
-      super(view)
-        this.service = new UserService();
+  public constructor( view: AuthenticateView){
+    super(view)
+  }
+
+
+  
+   protected pageDescription(user: User, props?: Props): string {
+    return props?.originalUrl ?? `/feed/${user.alias}`;
+}
+
+
+    protected itemDescription(): string {
+      return "log user";
     }
+    protected authenticate(alias: string, password: string, firstName?: string, lastName?: string, imageBytes?: Uint8Array, imageFileExtension?: string): Promise<[User, AuthToken]> {
+      return this.service.login(alias, password)
+    }
+    
+  
 
 
     
 
-    public async doLogin (alias: string, password: string, props: Props, rememberMe: boolean) {
-      await this.doFailureReportingOperation( async () => {
-        this.view.setIsLoading(true);
-
-      const [user, authToken] = await this.service.login(alias, password);
-
-      this.view.updateUser(user, user, authToken, rememberMe);
-
-      if (!!props.originalUrl) {
-        this.view.navigate(props.originalUrl);
-      } else {
-        this.view.navigate(`/feed/${user.alias}`);
-      }
-      }, "log user")
-      this.view.setIsLoading(false);
+  public async doLogin (alias: string, password: string, props: Props, rememberMe: boolean) {
+    await this.doAuthenticate(alias, password, rememberMe, props)
   };
 }

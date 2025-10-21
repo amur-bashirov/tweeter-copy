@@ -2,45 +2,40 @@
 import { Buffer } from "buffer";
 import { UserService } from "../model.service/UserService";
 import { Presenter, View } from "./Presenter";
+import { AuthenticatePresenter, AuthenticateView } from "./AuthenticatePresenter";
+import { User, AuthToken } from "tweeter-shared";
 
 
-export interface RegisterView extends View{
-    setIsLoading: (value: boolean) => void;
-    navigate: (path: string) => void,
-    updateUser: (user: any, user2: any, authToken: any, rememberMe: boolean) => void,
+export interface RegisterView extends AuthenticateView{
     setImageUrl: (image: string) =>void;
     setImageFileExtension: (image: string) => void;
     setImageBytes: (bytes: Uint8Array) => void;
 }
 
-export class RegisterPresenter extends Presenter <RegisterView>{
-    private service: UserService;
+export class RegisterPresenter extends AuthenticatePresenter<RegisterView>{
+  
 
     public constructor( view: RegisterView){
       super(view)
-        this.service = new UserService();
     }
+
+
+    protected pageDescription(user: User): string {
+    return `/feed/${user.alias}`;
+  }
+  protected itemDescription(): string {
+    return "register user";
+  }
+  protected authenticate(alias: string, password: string, firstName?: string, lastName?: string, imageBytes?: Uint8Array, imageFileExtension?: string): Promise<[User, AuthToken]> {
+    return this.service.register(firstName!, lastName!, alias, password, imageBytes!, imageFileExtension!)
+  }
 
     
 
     public async doRegister(firstName: string, lastName: string, alias: string, password: string,
         imageBytes: Uint8Array, imageFileExtension: string, rememberMe: boolean
      ) {
-        await this.doFailureReportingOperation( async () => {
-          this.view.setIsLoading(true);
-
-      const [user, authToken] = await this.service.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
-
-      this.view.updateUser(user, user, authToken, rememberMe);
-      this.view.navigate(`/feed/${user.alias}`);
-        }, "register user")
+      await this.doAuthenticate(alias, password, rememberMe,undefined,  firstName, lastName, imageBytes, imageFileExtension)
   };
 
 

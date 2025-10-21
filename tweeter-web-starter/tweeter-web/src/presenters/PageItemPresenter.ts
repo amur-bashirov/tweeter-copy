@@ -1,6 +1,7 @@
 import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { View, Presenter } from "./Presenter";
+import { Service } from "../model.service/Service";
 
 export  interface PageItemView <T> extends View{
     addItems:(Items: T[]) => void; 
@@ -15,7 +16,7 @@ export abstract class PageItemPresenter<T, U extends Service> extends Presenter<
     private _lastItem: T | null = null;
     private _service: U;
 
-    protected constructor(view: PageItemView<T>){
+    public constructor(view: PageItemView<T>){
         super(view);
         this._service = this.serviceFactory();
     }

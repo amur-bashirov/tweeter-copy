@@ -2,31 +2,24 @@
 import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model.service/FollowService";
 import { MessageView, Presenter } from "./Presenter";
+import { FollowingPresenter } from "./FolowingPresenter";
 
 
 
 export interface UserInfoView extends MessageView{
     setIsLoading: (value: boolean) => void;
-    displayErrorMessage: (message: string) => string;
-    displayInfoMessage: (
-        message: string,
-        duration: number,
-        bootstrapClasses?: string) => string,
-    deleteMessage: (id: string) => void;
     setIsFollower:(isfollower: boolean) => void;
     setFollowerCount: (count : number) => void;
     setFolloweeCount: (count: number) => void;
 }
 
 
-export class UserInfoPresenter extends Presenter <UserInfoView>{
+export class UserInfoPresenter extends FollowingPresenter{
   
-    private service: FollowService;
 
     
     public constructor( view: UserInfoView){
       super(view);
-      this.service = new FollowService();
       
     }
 
@@ -36,27 +29,7 @@ export class UserInfoPresenter extends Presenter <UserInfoView>{
   ): Promise<void> {
     //event.preventDefault();
 
-    var followingUserToast = "";
-
-    await this.doFailureReportingOperation( async () => {
-        this.view.setIsLoading(true);
-      followingUserToast = this.view.displayInfoMessage(
-        `Following ${displayedUser!.name}...`,
-        0
-      );
-
-      const [followerCount, followeeCount] = await this.service.follow(
-        authToken!,
-        displayedUser!
-      );
-
-      this.view.setIsFollower(true);
-      this.view.setFollowerCount(followerCount);
-      this.view.setFolloweeCount(followeeCount);
-    }, "follow user")
-
-    this.view.deleteMessage(followingUserToast);
-    this.view.setIsLoading(false);
+    this.followStatusDisplayedUser(displayedUser,authToken, "Following", "follow user", this.service.follow.bind(this.service), true )
   };
 
   public async unfollowDisplayedUser(
@@ -64,27 +37,7 @@ export class UserInfoPresenter extends Presenter <UserInfoView>{
   ): Promise<void>  {
    // event.preventDefault();
 
-    var unfollowingUserToast = "";
-
-    await this.doFailureReportingOperation( async () => {
-        this.view.setIsLoading(true);
-      unfollowingUserToast = this.view.displayInfoMessage(
-        `Unfollowing ${displayedUser!.name}...`,
-        0
-      );
-
-      const [followerCount, followeeCount] = await this.service.unfollow(
-        authToken!,
-        displayedUser!
-      );
-
-      this.view.setIsFollower(false);
-      this.view.setFollowerCount(followerCount);
-      this.view.setFolloweeCount(followeeCount);
-    }, "unfollow user")
-
-    this.view.deleteMessage(unfollowingUserToast);
-    this.view.setIsLoading(false);
+   this.followStatusDisplayedUser(displayedUser,authToken, "Unfollowing", "unfollow user", this.service.unfollow.bind(this.service), false )
   };
 
 

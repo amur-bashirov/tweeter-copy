@@ -5,21 +5,22 @@ import {  useParams } from "react-router-dom";
 import StatusItem from "../statusItem/statusItem";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions, useUserInfoContext } from "../userInfo/UserHooks";
-import { StatusItemView, StatusItemPresenter } from "../../presenters/StatusItemPresenter";
+import {  StatusItemPresenter } from "../../presenters/StatusItemPresenter";
+import { PageItemView } from "../../presenters/PageItemPresenter";
 
 
 
 
 interface Props{
   featureURL: string;
-  presenterFactory: (listener: StatusItemView) => StatusItemPresenter
+  presenterFactory: (listener: PageItemView<Status>) => StatusItemPresenter
 }
 
 const StatusItemScroller = (props: Props) =>{
   const {  displayErrorMessage } = useMessageActions()
   const [items, setItems] = useState<Status[]>([]);
   
-  const listener: StatusItemView = {
+  const listener: PageItemView<Status> = {
     addItems : (newItems: Status[]) => setItems((previousItems) => [...previousItems, ...newItems]),
     displayErrorMessage: displayErrorMessage
   }
