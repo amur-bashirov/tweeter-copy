@@ -12,11 +12,15 @@ export interface AppNavbarView extends MessageView{
 
 export class AppNavbarPresenter extends Presenter <AppNavbarView>{
 
-    private service: UserService;
+    private _service: UserService;
     
     public constructor( view: AppNavbarView){
         super(view)
-        this.service = new UserService();
+        this._service = new UserService();
+    }
+
+    public get service(){
+        return this._service;
     }
 
     public async logOut(authToken: AuthToken) {
@@ -25,9 +29,9 @@ export class AppNavbarPresenter extends Presenter <AppNavbarView>{
         await this.doFailureReportingOperation(async () => {
             await this.service.logout(authToken!);
 
-        this.view.deleteMessage(loggingOutToastId);
-        this.view.clearUser();
-        this.view.navigate("/login");
-        }, "log user")
+            this.view.deleteMessage(loggingOutToastId);
+            this.view.clearUser();
+            this.view.navigate("/login");
+        }, "log user out")
   };
 }
