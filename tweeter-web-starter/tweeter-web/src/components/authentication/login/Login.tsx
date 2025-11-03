@@ -1,6 +1,6 @@
 import "./Login.css";
 import "bootstrap/dist/css/bootstrap.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
 import AuthenticationFields from "../AuthenticationFields/AuthenticationFields";
@@ -10,6 +10,7 @@ import {  LoginPresenter, LoginView } from "../../../presenters/LoginPresenter";
 
 export interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -32,8 +33,12 @@ const Login = (props: Props) => {
   
   const presenterRef = useRef<LoginPresenter | null>(null);
     if (!presenterRef.current) {
-      presenterRef.current = new LoginPresenter(view);
+      presenterRef.current = props.presenter ?? new LoginPresenter(view);
     }
+
+  useEffect(()=> {
+    presenterRef.current = props.presenter ?? new LoginPresenter(view);
+  }, [rememberMe])
 
   const checkSubmitButtonStatus = (): boolean => {
     return !alias || !password;
@@ -51,7 +56,7 @@ const Login = (props: Props) => {
     props: Props,
     rememberMe: boolean
   ) => {
-    presenterRef.current!.doLogin(alias, password, props, rememberMe)
+    presenterRef.current!.doLogin(alias, password, props.originalUrl, rememberMe)
   };
 
   const inputFieldFactory = () => {

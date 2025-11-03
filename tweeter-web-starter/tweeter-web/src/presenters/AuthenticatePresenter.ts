@@ -26,7 +26,7 @@ export abstract class AuthenticatePresenter<V extends AuthenticateView> extends 
     }
 
 
-    public async doAuthenticate(alias: string, password: string,rememberMe: boolean, props: Props | undefined, firstName?: string, lastName?: string,
+    public async doAuthenticate(alias: string, password: string,rememberMe: boolean, originalUrl: string | undefined, firstName?: string, lastName?: string,
         imageBytes?: Uint8Array, imageFileExtension?: string , 
      ) {
         await this.doFailureReportingOperation( async () => {
@@ -42,8 +42,8 @@ export abstract class AuthenticatePresenter<V extends AuthenticateView> extends 
       );
 
       this.view.updateUser(user, user, authToken, rememberMe);
-      if (props === undefined){
-        this.view.navigate(this.pageDescription(user, props));
+      if (originalUrl === undefined){
+        this.view.navigate(this.pageDescription(user, originalUrl));
       }else {
         this.view.navigate(this.pageDescription(user));
       }
@@ -51,7 +51,7 @@ export abstract class AuthenticatePresenter<V extends AuthenticateView> extends 
       this.view.setIsLoading(false);
   };
 
-  protected abstract pageDescription(user: User, props?: Props): string;
+  protected abstract pageDescription(user: User, originalUrl?: string | undefined): string;
 
   protected abstract itemDescription(): string;
 

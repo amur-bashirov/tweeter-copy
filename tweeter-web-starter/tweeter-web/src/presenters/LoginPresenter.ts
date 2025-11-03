@@ -19,8 +19,8 @@ export class LoginPresenter extends AuthenticatePresenter<LoginView>{
 
 
   
-   protected pageDescription(user: User, props?: Props): string {
-    return props?.originalUrl ?? `/feed/${user.alias}`;
+   protected pageDescription(user: User, originalUrl: string): string {
+    return originalUrl ?? `/feed/${user.alias}`;
 }
 
 
@@ -36,7 +36,7 @@ export class LoginPresenter extends AuthenticatePresenter<LoginView>{
 
     
 
-  public async doLogin (alias: string, password: string, props: Props, rememberMe: boolean) {
-    await this.doAuthenticate(alias, password, rememberMe, props)
+  public async doLogin (alias: string, password: string, originalUrl: string | undefined, rememberMe: boolean) {
+    await this.doAuthenticate(alias, password, rememberMe, originalUrl)
   };
 }
