@@ -4,7 +4,11 @@ import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoContext } from "../userInfo/UserHooks";
 import { PostPresenter, PostView } from "../../presenters/PostPresenter";
 
-const PostStatus = () => {
+interface PostStatusProps {
+  postPresenter?: PostPresenter;
+}
+
+const PostStatus: React.FC<PostStatusProps> = ({ postPresenter }) =>{
   const {  displayErrorMessage, displayInfoMessage, deleteMessage } = useMessageActions();
 
   const { currentUser, authToken } = useUserInfoContext();
@@ -21,7 +25,7 @@ const PostStatus = () => {
 
   const presenterRef = useRef<PostPresenter | null>(null);
   if (!presenterRef.current) {
-    presenterRef.current = new PostPresenter(view);
+    presenterRef.current = postPresenter ?? new PostPresenter(view);
   }
 
   const submitPost = async (event: React.MouseEvent) => {

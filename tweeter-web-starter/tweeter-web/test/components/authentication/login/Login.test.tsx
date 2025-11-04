@@ -1,6 +1,6 @@
 import { MemoryRouter } from "react-router-dom";
-import Login, { Props} from "../../../../src/components/authentication/login/Login"
-import {render, screen} from "@testing-library/react"
+import Login from "../../../../src/components/authentication/login/Login"
+import { render, screen} from "@testing-library/react"
 import {userEvent} from "@testing-library/user-event"
 import "@testing-library/jest-dom"
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -64,7 +64,9 @@ describe("Login Component", () => {
         await user.type(aliasField, alias);
         await user.type(passwordField,password);
 
+        
         await user.click(signInButton);
+            
 
         verify(mockPresenter.doLogin(alias, password,originalUrl, rememberMe)).once();
     })
