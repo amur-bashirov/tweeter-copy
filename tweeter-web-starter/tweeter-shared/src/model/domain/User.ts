@@ -90,7 +90,7 @@ export class User {
     }
   }
 
-  public getDomainObject(dto: UserDto | null): User | null{
+  public static fromDto(dto: UserDto | null): User | null{
     return dto == null ? null :  new User(dto!.firstName, dto!.lastName, dto!.alias, dto!.imageUrl);
   }  
 }
