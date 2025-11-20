@@ -24,8 +24,8 @@ export class FollowService implements Service{
   };
 
   private async getFakeData(lastItem: UserDto | null, pageSize: number, userAlias: string): Promise<[UserDto[], boolean]> {
-    const [items, more] = FakeData.instance.getPageOfUsers(this.getDomainObject(lastItem), pageSize, userAlias);
-    const dtos = items.map((user) => this.createDto(user));
+    const [items, more] = FakeData.instance.getPageOfUsers(User.fromDto(lastItem), pageSize, userAlias);
+    const dtos = items.map((user) => user.dto);
     return [dtos, more];
   }
 
