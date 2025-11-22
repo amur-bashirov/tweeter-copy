@@ -2,6 +2,8 @@
 // uploading to lambda. Instead we have to list each export.
 
 
+
+
 //
 //Domain Classes
 //
@@ -16,18 +18,20 @@ export { AuthToken } from "./model/domain/AuthToken";
 //
 
 export type { UserDto} from "./model/dto/UserDto";
+export type { AuthTokenDto} from "./model/dto/AuthTokenDto";
 
 
 //
 //Requests
 ///
 export type { PagedUserItemRequest} from "./model/net/request/PagedUserItemRequest";
-
+export type {UserRequest} from "./model/net/request/UserRequest";
 
 //
 //Responses
 //
 export type {PagedUserItemResponse} from "./model/net/response/PagedUserItemResponse";
+export type {GetUserResponse} from "./model/net/response/GetUserResponse";
 
 
 //
@@ -35,3 +39,4 @@ export type {PagedUserItemResponse} from "./model/net/response/PagedUserItemResp
 //
 
 export { FakeData } from "./util/FakeData";
+
