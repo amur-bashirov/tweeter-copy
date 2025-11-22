@@ -1,9 +1,16 @@
 version = 0.1
 
+
+
 [default.deploy.parameters]
 stack_name = "tweeter-server"
 s3_bucket = "amzn-s3-tweeter-amur-bashirov"
-region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_NAMED_IAM"
 image_repositories = []
+resolve_s3 = true
+s3_prefix = "tweeter-server"
+disable_rollback = true
+
+[default.global.parameters]
+region = "us-east-1"

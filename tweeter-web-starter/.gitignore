@@ -26,3 +26,4 @@ yarn-error.log*
 /tweeter-server/node_modules
 /tweeter-server/dist
 /tweeter-server/layer
+/tweeter-server/.aws-sam
