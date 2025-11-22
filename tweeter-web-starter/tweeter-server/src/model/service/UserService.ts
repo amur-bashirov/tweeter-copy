@@ -32,8 +32,11 @@ export class UserService implements Service{
           throw new Error("Invalid registration");
         }
 
+        const userDto = User.toDto(user)!
+        const authDto = AuthToken.toDto(FakeData.instance.authToken)!
+
     
-        return [User.toDto(user)!, AuthToken.toDto(FakeData.instance.authToken)!];
+        return [userDto, authDto];
       };
 
     public async login(
