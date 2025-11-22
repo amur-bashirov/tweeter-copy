@@ -29,6 +29,7 @@ export type { PagedUserItemRequest} from "./model/net/request/PagedUserItemReque
 export type {UserRequest} from "./model/net/request/UserRequest";
 export type {CreateUserRequest} from "./model/net/request/CreateUserRequest";
 export type {TweeterRequest} from "./model/net/request/TweeterRequest";
+export type {LoginRequest} from "./model/net/request/LoginRequest";
 
 //
 //Responses

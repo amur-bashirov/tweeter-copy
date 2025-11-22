@@ -50,7 +50,10 @@ export class UserService implements Service{
       throw new Error("Invalid alias or password");
     }
 
-    return [user, FakeData.instance.authToken];
+    const userDto = User.toDto(user)!
+    const authDto = AuthToken.toDto(FakeData.instance.authToken)!
+
+    return [userDto, authDto];
   };
 
   public async logout(authToken: AuthToken): Promise<void>  {

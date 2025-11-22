@@ -133,6 +133,36 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
+
+
+          /user/login:  ##### TODO: Set endpoint URL
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  ##### TODO: Set function name
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${userLoginFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+
+
+          /user/logout:  ##### TODO: Set endpoint URL
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  ##### TODO: Set function name
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${userLogoutFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
               
           /followees:
             post:
@@ -219,6 +249,34 @@ Resources:
     Properties:
       FunctionName: userCreateFunction  ##### TODO: Set function name
       Handler: lambda/users/UserCreateLambda.handler  ##### TODO: Set Handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /user/create  ##### TODO: Set Path
+            Method: POST
+            
+  userLoginFunction:  ##### TODO: Set function name
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: userLoginFunction  ##### TODO: Set function name
+      Handler: lambda/users/UserLoginLambda.handler  ##### TODO: Set Handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /user/create  ##### TODO: Set Path
+            Method: POST
+
+  userLogoutFunction:  ##### TODO: Set function name
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: userLogoutFunction  ##### TODO: Set function name
+      Handler: lambda/users/UserLogoutLambda.handler  ##### TODO: Set Handler
       Policies: *commonPolicies
       Events:
         PostApi:
