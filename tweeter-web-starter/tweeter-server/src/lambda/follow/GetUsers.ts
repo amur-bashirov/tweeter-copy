@@ -1,23 +1,21 @@
 import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared";
 import { FollowService } from "../../model/service/FollowService";
-import { AuthToken } from "tweeter-shared";
 
+
+
+import { LambdaHelper } from "../LambdaHelper";
 
 export const userHandler = async (
   request: PagedUserItemRequest,
   method: "loadMoreFollowers" | "loadMoreFollowees"
 ): Promise<PagedUserItemResponse> => {
 
-  
   const followService = new FollowService();
 
-  
-  const serviceMethod = followService[method].bind(followService);
-  const token = AuthToken.fromDto(request.token ?? null);
-  if (!token) {
-    throw new Error("Missing auth token");
-  }
 
+  const token = LambdaHelper.requireToken(request.token);
+
+  const serviceMethod = followService[method].bind(followService);
 
   const [items, hasMore] = await serviceMethod(
     token.token,
@@ -26,11 +24,9 @@ export const userHandler = async (
     request.lastItem
   );
 
-  return {
-    success: true,
-    message: null,
+  return LambdaHelper.success<PagedUserItemResponse>({
     items,
     hasMore
-  };
+  });
 };
 
