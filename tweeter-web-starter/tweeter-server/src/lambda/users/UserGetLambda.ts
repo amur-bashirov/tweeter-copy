@@ -9,5 +9,5 @@ export const handler = async (request: UserRequest): Promise<GetUserResponse> =>
 
   const userDto = await h.service.getUser(h.token!, h.alias);
 
-  return LambdaHelper.success({ user: userDto });
+  return LambdaHelper.success<GetUserResponse>({ user: userDto });
 };
