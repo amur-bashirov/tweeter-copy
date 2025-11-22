@@ -202,7 +202,7 @@ Resources:
       ##### TODO: Change "userGetFunction" to the actual function name.
       FunctionName: userGetFunction
       ##### TODO: Modify Handler property to match your code. This identifies the exact function that the lambda should run.
-      Handler: handlers/users/UserGetHandler.userGetHandler
+      Handler: lambda/users/UserGetLambda.handler
       Policies: *commonPolicies
       Events:
         PostApi:
@@ -218,7 +218,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: userCreateFunction  ##### TODO: Set function name
-      Handler: handlers/users/UserCreateHandler.userCreateHandler  ##### TODO: Set Handler
+      Handler: lambda/users/UserCreateLambda.handler  ##### TODO: Set Handler
       Policies: *commonPolicies
       Events:
         PostApi:
@@ -245,7 +245,7 @@ Resources:
   getFollowersFunction:  
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getFolloweesFunction  
+      FunctionName: getFollowersFunction  
       Handler: lambda/follow/GetFollowersLambda.handler
       Policies: *commonPolicies
       Events:

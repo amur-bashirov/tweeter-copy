@@ -1,5 +1,5 @@
 import { TweeterRequest } from "./TweeterRequest";
 
 export interface UserRequest extends TweeterRequest{
-    alias?: string | null;
+    readonly alias?: string | null;
 }

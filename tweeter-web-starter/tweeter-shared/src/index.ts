@@ -26,12 +26,14 @@ export type { AuthTokenDto} from "./model/dto/AuthTokenDto";
 ///
 export type { PagedUserItemRequest} from "./model/net/request/PagedUserItemRequest";
 export type {UserRequest} from "./model/net/request/UserRequest";
+export type {CreateUserRequest} from "./model/net/request/CreateUserRequest";
 
 //
 //Responses
 //
 export type {PagedUserItemResponse} from "./model/net/response/PagedUserItemResponse";
 export type {GetUserResponse} from "./model/net/response/GetUserResponse";
+export type {CreateUserResponse} from "./model/net/response/CreateUserResponse";
 
 
 //

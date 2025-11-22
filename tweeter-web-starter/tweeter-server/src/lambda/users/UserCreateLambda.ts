@@ -1,9 +1,9 @@
 
-import { UserRequest, GetUserResponse, AuthToken } from "tweeter-shared";
+import { AuthToken, CreateUserRequest, CreateUserResponse } from "tweeter-shared";
 import { UserService } from "../../model/service/UserService";
 
 
-export const handler = async(request: UserRequest): Promise<GetUserResponse> => {
+export const handler = async(request: CreateUserRequest): Promise<CreateUserResponse> => {
 
   
     const userService = new UserService();
@@ -15,13 +15,15 @@ export const handler = async(request: UserRequest): Promise<GetUserResponse> => 
         throw new Error("Missing alias in request");
     }
   
-    const userDto = await userService.getUser(token, request.alias);
+    const [userDto, authTokenDto] = await userService.register(request.firstName,request.lastName,
+         request.alias,request.password, request.userImageBytes, request.imageFileExtension);
 
     
 
     return {
         success: true,
         message: null,
-        user: userDto
+        user: userDto,
+        token: authTokenDto
     };
 }
