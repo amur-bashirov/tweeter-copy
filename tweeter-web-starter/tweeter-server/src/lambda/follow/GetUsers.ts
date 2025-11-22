@@ -13,12 +13,12 @@ export const userHandler = async (
   const followService = new FollowService();
 
 
-  const token = LambdaHelper.requireToken(request.token);
+  const token = LambdaHelper.requireFields(request, "token");
 
   const serviceMethod = followService[method].bind(followService);
 
   const [items, hasMore] = await serviceMethod(
-    token.token,
+    token,
     request.userAlias,
     request.pageSize,
     request.lastItem

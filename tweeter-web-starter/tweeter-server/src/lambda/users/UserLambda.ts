@@ -1,12 +1,11 @@
-import {  UserRequest, AuthToken } from "tweeter-shared";
+import {  UserRequest } from "tweeter-shared";
 import { UserService } from "../../model/service/UserService";
 import { LambdaHelper } from "../LambdaHelper";
 
 export class UserLambda<T extends UserRequest > {
 
   public readonly service: UserService;
-  public readonly alias: string;
-  public readonly token: AuthToken | null;
+  public readonly alias: string | null;
   public readonly request: T;
 
   constructor(request: T) {
@@ -14,10 +13,12 @@ export class UserLambda<T extends UserRequest > {
     this.request = request;
 
     
-    LambdaHelper.requireFields(request, "alias");
-    this.alias = request.alias!; 
-    
-    this.token = LambdaHelper.requireToken(request.token);
+    if (request.alias !== undefined) {
+      LambdaHelper.requireFields(request, "alias");
+      this.alias = request.alias!;
+    } else{
+      this.alias = null;
+    }
 
   }
 }

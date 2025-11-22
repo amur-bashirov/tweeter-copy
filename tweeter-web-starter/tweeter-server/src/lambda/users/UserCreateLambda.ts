@@ -12,7 +12,7 @@ export const handler = async (
   const [userDto, tokenDto] = await h.service.register(
     request.firstName,
     request.lastName,
-    h.alias,
+    h.alias!,
     request.password,
     request.userImageBytes,
     request.imageFileExtension

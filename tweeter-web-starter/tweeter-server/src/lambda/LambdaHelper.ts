@@ -1,15 +1,6 @@
-import { AuthToken, TweeterResponse } from "tweeter-shared";
+import { TweeterResponse } from "tweeter-shared";
 
 export class LambdaHelper {
-
-  /** Validate auth token exists and return AuthToken instance */
-  static requireToken(tokenDto: any): AuthToken {
-    const token = AuthToken.fromDto(tokenDto ?? null);
-    if (!token) {
-      throw new Error("Missing auth token");
-    }
-    return token;
-  }
 
   /** Validate that required fields are present */
   static requireFields(request: any, ...fields: string[]) {
@@ -17,6 +8,7 @@ export class LambdaHelper {
       if (request[field] === undefined || request[field] === null) {
         throw new Error(`Missing required field: ${field}`);
       }
+      return request[field]
     }
   }
 
