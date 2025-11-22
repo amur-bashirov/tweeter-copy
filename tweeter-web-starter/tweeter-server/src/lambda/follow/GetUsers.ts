@@ -1,27 +1,23 @@
 import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared";
-import { FollowService } from "../../model/service/FollowService";
 
 
 
 import { LambdaHelper } from "../LambdaHelper";
+import { FollowLambda } from "./FollowLambda";
 
 export const userHandler = async (
   request: PagedUserItemRequest,
   method: "loadMoreFollowers" | "loadMoreFollowees"
 ): Promise<PagedUserItemResponse> => {
+  const h = new FollowLambda(request); 
 
-  const followService = new FollowService();
-
-
-  const token = LambdaHelper.requireFields(request, "token");
-
-  const serviceMethod = followService[method].bind(followService);
+  const serviceMethod = h.service[method].bind(h.service);
 
   const [items, hasMore] = await serviceMethod(
-    token,
+    h.token!,
     request.userAlias,
     request.pageSize,
-    request.lastItem
+    request.user
   );
 
   return LambdaHelper.success<PagedUserItemResponse>({
