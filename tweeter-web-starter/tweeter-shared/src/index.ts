@@ -42,6 +42,7 @@ export type {TweeterResponse} from "./model/net/response/TweeterResponse";
 export type {CreateUserResponse} from "./model/net/response/CreateUserResponse";
 export type {FollowResponse} from "./model/net/response/FollowResponse";
 export type {FollowCountResponse} from "./model/net/response/FollowCountResponse";
+export type {GetIsFollowerStatusResponse} from "./model/net/response/GetIsFollowerStatusResponse";
 
 
 

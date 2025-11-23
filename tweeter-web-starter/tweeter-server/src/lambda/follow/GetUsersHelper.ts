@@ -3,7 +3,7 @@ import { PagedUserItemRequest, PagedUserItemResponse } from "tweeter-shared";
 
 
 import { LambdaHelper } from "../LambdaHelper";
-import { FollowLambda } from "./FollowLambda";
+import { FollowLambda } from "./FollowLambdaHelper";
 
 export const userHandler = async (
   request: PagedUserItemRequest,

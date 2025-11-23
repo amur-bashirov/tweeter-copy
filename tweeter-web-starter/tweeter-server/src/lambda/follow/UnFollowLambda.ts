@@ -3,5 +3,5 @@ import { userHandler } from "./StatusLambdaHelper";
 
 
 export const handler = async(request: FollowRequest): Promise<FollowResponse> => {
-    return userHandler(request, "follow");
+    return userHandler(request, "unfollow");
 }
