@@ -3,7 +3,6 @@
 
 
 
-
 //
 //Domain Classes
 //
@@ -32,7 +31,8 @@ export type {TweeterRequest} from "./model/net/request/TweeterRequest";
 export type {LoginRequest} from "./model/net/request/LoginRequest";
 export type {FollowRequest} from "./model/net/request/FollowRequest";
 export type {GetIsFollowerStatusRequest} from "./model/net/request/GetIsFollowerStatusRequest";
-
+export type {PostStatusRequest} from "./model/net/request/PostStatusRequest";
+export type {LoadMoreItemRequest} from "./model/net/request/LoadMoreItemsRequest"
 //
 //Responses
 //
@@ -43,6 +43,7 @@ export type {CreateUserResponse} from "./model/net/response/CreateUserResponse";
 export type {FollowResponse} from "./model/net/response/FollowResponse";
 export type {FollowCountResponse} from "./model/net/response/FollowCountResponse";
 export type {GetIsFollowerStatusResponse} from "./model/net/response/GetIsFollowerStatusResponse";
+export type {LoadMoreItemsResponse} from "./model/net/response/LoadMoreItemsResponse";
 
 
 

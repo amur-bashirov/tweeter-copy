@@ -255,6 +255,42 @@ Resources:
                 requestTemplates: *commonRequestTemplates
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
+          /status/loadMoreFeeds:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${loadMoreFeedItemsFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+          /status/loadMoreStories:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${loadMoreStoryItemsFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+          /status/post:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${postStatusFunction.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
                           #
             # TODO: ADD MORE ENDPOINT DEFINITIONS HERE
             #
@@ -446,7 +482,45 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /followers/getIsFollow
             Method: POST
-
+  loadMoreFeedItemsFunction:  
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: loadMoreFeedItemsFunction  
+      Handler: lambda/follow/LoadMoreFeedsLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /status/loadMoreFeeds
+            Method: POST
+  loadMoreStoryItemsFunction:  
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: loadMoreStoryItemsFunction  
+      Handler: lambda/follow/LoadMoreStoryItemsLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /status/loadMoreStories
+            Method: POST
+  postStatusFunction:  
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: postStatusFunction  
+      Handler: lambda/follow/PostStatusLAmbda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /status/post
+            Method: POST
 
   #
   # TODO: ADD MORE WEB API LAMBDA DEFINITIONS HERE
