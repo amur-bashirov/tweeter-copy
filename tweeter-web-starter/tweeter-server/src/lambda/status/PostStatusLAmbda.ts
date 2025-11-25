@@ -1,11 +1,19 @@
 import { PostStatusRequest, TweeterResponse } from "tweeter-shared";
 import { StatusLambdaHelper } from "./StatusLambdaHelper";
-import { LambdaHelper } from "../LambdaHelper";
+import { LambdaRunner } from "../LambdaRunner";
+import { StatusService } from "../../model/service/StatusService";
 
+export const handler = async (
+  request: PostStatusRequest
+): Promise<TweeterResponse> => {
 
-
-export const handler = async (request: PostStatusRequest): Promise<TweeterResponse> => {
-    const h = new StatusLambdaHelper(request);
-    h.service.postStatus(h.token!, request.newStatus)
-    return LambdaHelper.success({});
-}
+  return LambdaRunner.run<StatusService, PostStatusRequest, TweeterResponse>(
+    StatusLambdaHelper,
+    request,
+    "postStatus",
+    ["token"],         
+    undefined,         
+    request.token!,
+    request.newStatus
+  );
+};

@@ -1,19 +1,22 @@
 
 
 import { FollowRequest, FollowResponse } from "tweeter-shared";
-import { LambdaHelper } from "../LambdaHelper";
 import { FollowLambda } from "./FollowLambdaHelper";
+import { LambdaRunner } from "../LambdaRunner";
+import { FollowService } from "../../model/service/FollowService";
 
 export const userHandler = async (
   request: FollowRequest,
   method: "follow" | "unfollow"
 ): Promise<FollowResponse> => {
-    const h = new FollowLambda(request, request.user!); 
-    const serviceMethod = h.service[method].bind(h.service);
-    const [followerCount, followeeCount] = await serviceMethod(h.token!, h.user);
 
-    return LambdaHelper.success<FollowResponse>({
-    followerCount: followerCount,
-    followeeCount: followeeCount
-    });
+  return LambdaRunner.run<FollowService, FollowRequest, FollowResponse>(
+    FollowLambda,       
+    request,            
+    method,             
+    [],                 
+    request.user!,      
+    request.token!,     
+    request.user!       
+  );
 };

@@ -1,26 +1,21 @@
-import {  FollowRequest, UserDto } from "tweeter-shared";
+import { FollowRequest, UserDto } from "tweeter-shared";
 import { FollowService } from "../../model/service/FollowService";
-import { LambdaHelper } from "../LambdaHelper";
+import { AbstractLambda } from "../AbstractLambda";
 
-export class FollowLambda<T extends FollowRequest>{
+export class FollowLambda<T extends FollowRequest = FollowRequest>
+  extends AbstractLambda<T, FollowService> {
 
-  public readonly service: FollowService;
-  public readonly token: string | null;
-  public readonly request: T;
-  public readonly user: UserDto
+  public readonly user: UserDto;
+  public readonly token: string;
 
-  constructor(request: T,
-     user: UserDto = { alias: "", firstName: "", lastName: "", imageUrl: "" }
-    ) {
-    this.service = new FollowService();
-    this.request = request;
-    
-    LambdaHelper.requireFields(request, "user");
+  constructor(
+    request: T,
+    user: UserDto = { alias: "", firstName: "", lastName: "", imageUrl: "" }
+  ) {
+    super(request, FollowService, ["token", "user"]);
+
     this.user = user;
-    
-    LambdaHelper.requireFields(request, "token");
     this.token = request.token!;
-
-
   }
 }
+

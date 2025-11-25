@@ -1,20 +1,15 @@
-import { TweeterRequest, UserDto } from "tweeter-shared";
-import { LambdaHelper } from "../LambdaHelper";
+import { TweeterRequest } from "tweeter-shared";
 import { StatusService } from "../../model/service/StatusService";
+import { AbstractLambda } from "../AbstractLambda";
 
-export class StatusLambdaHelper<T extends TweeterRequest>{
+export class StatusLambdaHelper<T extends TweeterRequest = TweeterRequest>
+  extends AbstractLambda<T, StatusService> {
 
-  public readonly service: StatusService;
-  public readonly token: string | null;
+  public readonly token: string;
 
-  constructor(request: T
-    ) {
-    this.service = new StatusService();
+  constructor(request: T) {
+    super(request, StatusService, ["token"]);
 
-    
-    LambdaHelper.requireFields(request, "token");
     this.token = request.token!;
-
-
   }
 }

@@ -2,13 +2,18 @@
 import { UserRequest, GetUserResponse } from "tweeter-shared";
 import { LambdaHelper } from "../LambdaHelper";
 import { UserLambda } from "./UserLambda";
+import { LambdaRunner } from "../LambdaRunner";
+import { UserService } from "../../model/service/UserService";
 
 export const handler = async (request: UserRequest): Promise<GetUserResponse> => {
 
-  const h = new UserLambda(request);
-  const token = LambdaHelper.requireFields(request, "token");
-
-  const userDto = await h.service.getUser(token, h.alias!);
-
-  return LambdaHelper.success<GetUserResponse>({ user: userDto });
+  return LambdaRunner.run<UserService, UserRequest,GetUserResponse >(
+    UserLambda,
+    request,
+    "getUser",
+    ["token"],
+    undefined,
+    request.token,
+    request.alias
+  )
 };
