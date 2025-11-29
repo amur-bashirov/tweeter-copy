@@ -10,12 +10,10 @@ export abstract class AbstractLambda<T extends TweeterRequest, S extends Service
   constructor(request: T, serviceCtor: new () => S, requiredFields: (keyof T)[] = []) {
     this.request = request;
     this.service = new serviceCtor();
+    console.log("EVENT RECEIVED BY LAMBDA:", JSON.stringify(request));
 
     // Validate required fields
-    this.requreFileds<T>(request, requiredFields)
-    for (const field of requiredFields) {
-      LambdaHelper.requireFields(request, field as string);
-    }
+    this.requreFileds<T>(request, ...requiredFields)
   }
 
   /**
@@ -31,13 +29,22 @@ export abstract class AbstractLambda<T extends TweeterRequest, S extends Service
     if (typeof fn !== "function") {
       throw new Error(`Service method '${String(methodName)}' does not exist`);
     }
-    this.requreFileds<T>(request, requiredFields)
-    this.requreFileds<T>(request, args)
+    this.requreFileds<T>(request, ...requiredFields)
+    this.validateArgs(...args);
+
 
     const result = await fn.apply(this.service, args);
 
     return LambdaHelper.success<R>(result);
   }
+  private validateArgs(...args: any[]) {
+  for (const arg of args) {
+    if (arg === null || arg === undefined) {
+      throw new Error("Missing required argument");
+    }
+  }
+  }
+
 
   private requreFileds<R extends TweeterRequest>(request:R, ...args: any[]){
     for (const arg of args) {
