@@ -7,7 +7,7 @@ export class FollowLambda<T extends FollowRequest = FollowRequest> extends Abstr
   public readonly token: string;
 
   constructor(request: T, user: UserDto = { alias: "", firstName: "", lastName: "", imageUrl: "" }) {
-    super(request, FollowService, ["user", "token"]);
+    super(request, FollowService, [ "token"]);
     this.user = user;
     this.token = request.token!;
   }

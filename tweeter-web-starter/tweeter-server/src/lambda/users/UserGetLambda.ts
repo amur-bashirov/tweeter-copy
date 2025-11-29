@@ -6,7 +6,7 @@ export const handler = async (request: UserRequest): Promise<GetUserResponse> =>
     return new UserLambda(request).run<UserRequest,GetUserResponse>(
     request,
     "getUser",
-    ["token"],
+    ["token", "alias"],
     request.token,
     request.alias
     )

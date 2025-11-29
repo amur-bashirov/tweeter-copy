@@ -6,14 +6,14 @@ export const userHandler = async (
   method: "loadMoreFollowers" | "loadMoreFollowees"
 ): Promise<PagedUserItemResponse> => {
 
-  return new FollowLambda(request, request.user!).run<PagedUserItemRequest, PagedUserItemResponse>(
+  return new FollowLambda(request).run<PagedUserItemRequest, PagedUserItemResponse>(
     request,
     method,
-    [],                 
+    ["lastItem", "pageSize", "userAlias"],                 
     request.token!,
     request.userAlias,
     request.pageSize,
-    request.user     
+    request.lastItem     
   )
 
 

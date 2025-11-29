@@ -69,9 +69,10 @@ export class FollowService implements Service{
     token: string,
     user: UserDto,
     selectedUser: UserDto
-  ): Promise<boolean> {
+  ): Promise<{status: boolean}> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.isFollower();
+    const status = FakeData.instance.isFollower();
+    return {status}
   };
 
   public async follow (

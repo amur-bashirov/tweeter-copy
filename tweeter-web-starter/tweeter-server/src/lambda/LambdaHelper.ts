@@ -5,7 +5,7 @@ export class LambdaHelper {
   /** Validate that required fields are present */
   static requireFields(request: any, ...fields: string[]) {
     for (const field of fields) {
-      if (request[field] === undefined || request[field] === null) {
+      if (request[field] === undefined ) {
         throw new Error(`Missing required field: ${field}`);
       }
       return request[field]

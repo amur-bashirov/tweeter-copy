@@ -8,7 +8,7 @@ export const handler = async (
       return new StatusLambdaHelper(request).run<PostStatusRequest, TweeterResponse>(
         request,
         "postStatus",
-        ["token"],         
+        ["token", "newStatus"],         
         request.token!,
         request.newStatus 
       )

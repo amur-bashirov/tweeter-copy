@@ -6,10 +6,11 @@ export class UserService implements Service{
     public async getUser (
         authToken: string,
         alias: string
-      ): Promise<UserDto | null>{
+      ): Promise<{user: UserDto | null}>{
         // TODO: Replace with the result of calling server
-        const user = FakeData.instance.findUserByAlias(alias);
-        return User.toDto(user)
+        const user1 = FakeData.instance.findUserByAlias(alias);
+        const user = User.toDto(user1)
+        return {user}
       };
 
     public async register(

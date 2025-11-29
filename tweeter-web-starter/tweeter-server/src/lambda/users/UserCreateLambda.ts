@@ -11,7 +11,7 @@ export const handler = async (
     return new UserLambda(request).run<CreateUserRequest, CreateUserResponse>(
     request,
     "register",
-    [],
+    ["alias","firstName","lastName", "imageFileExtension", "password", "userImageBytes","token"],
     request.firstName,
     request.lastName,
     request.alias,

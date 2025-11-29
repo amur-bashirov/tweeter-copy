@@ -10,7 +10,7 @@ export const userHandler = async (
   return new FollowLambda(request, request.user!).run<FollowRequest, FollowResponse>(
     request,            
     method,             
-    [],                      
+    ["user"],                      
     request.token!,     
     request.user!     
   )

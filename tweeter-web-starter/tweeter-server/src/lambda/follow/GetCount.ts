@@ -12,7 +12,7 @@ export const userHandler = async (
   return new FollowLambda(request, request.user!).run<FollowRequest,FollowCountResponse>(
     request,
     method,
-    [],
+    ["user"],
     request.token!,
     request.user
   );

@@ -11,7 +11,7 @@ export const itemsHandler = async (
   return new StatusLambdaHelper(request).run<LoadMoreItemRequest, LoadMoreItemsResponse>(
     request,
     method,
-    [],                
+    ["lastItem","pageSize", "userAlias"],                
     request.token!,
     request.userAlias,
     request.pageSize,

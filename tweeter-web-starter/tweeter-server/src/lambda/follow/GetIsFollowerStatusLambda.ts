@@ -8,7 +8,7 @@ export const handler = async (
     return new FollowLambda(request, request.user!).run<GetIsFollowerStatusRequest, GetIsFollowerStatusResponse>(
         request,
         "getIsFollowerStatus",
-        ["selectedUser"],   
+        ["selectedUser", "user"],   
         request.token!,
         request.user!,
         request.selectedUser!       
