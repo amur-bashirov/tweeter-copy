@@ -9,9 +9,10 @@ export class StatusService implements Service{
           userAlias: string,
           pageSize: number,
           lastItem: StatusDto | null
-        ): Promise<[StatusDto[], boolean]> {
+        ): Promise<{statuses: StatusDto[], bool: boolean}> {
           // TODO: Replace with the result of calling server
-          return FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
+          const [statuses, bool] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
+          return {statuses, bool};
         };
     
     public async loadMoreStoryItems(
@@ -19,9 +20,10 @@ export class StatusService implements Service{
         userAlias: string,
         pageSize: number,
         lastItem: StatusDto | null
-      ): Promise<[StatusDto[], boolean]> {
+      ): Promise<{statuses: StatusDto[], bool: boolean}> {
         // TODO: Replace with the result of calling server
-        return FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
+          const [statuses, bool] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
+          return {statuses, bool};
       };
 
     public async postStatus(

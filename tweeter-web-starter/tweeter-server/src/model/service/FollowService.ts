@@ -8,7 +8,7 @@ export class FollowService implements Service{
       userAlias: string,
       pageSize: number,
       lastItem: UserDto | null
-    ): Promise<[UserDto[], boolean]>{
+    ): Promise<{items: UserDto[], hasMore: boolean}>{
       // TODO: Replace with the result of calling server
       return this.getFakeData(lastItem, pageSize, userAlias);
     };
@@ -18,15 +18,15 @@ export class FollowService implements Service{
   userAlias: string,
   pageSize: number,
   lastItem: UserDto | null
-  ): Promise<[UserDto[], boolean]>{
+  ): Promise<{ items: UserDto[], hasMore: boolean}>{
     // TODO: Replace with the result of calling server
     return this.getFakeData(lastItem, pageSize, userAlias);
   };
 
-  private async getFakeData(lastItem: UserDto | null, pageSize: number, userAlias: string): Promise<[UserDto[], boolean]> {
-    const [items, more] = FakeData.instance.getPageOfUsers(User.fromDto(lastItem), pageSize, userAlias);
-    const dtos = items.map((user) => user.dto);
-    return [dtos, more];
+  private async getFakeData(lastItem: UserDto | null, pageSize: number, userAlias: string): Promise<{items: UserDto[], hasMore: boolean}> {
+    const [users, more] = FakeData.instance.getPageOfUsers(User.fromDto(lastItem), pageSize, userAlias);
+    const items = users.map((user) => user.dto);
+    return { items: items, hasMore: more };
   }
 
   public async getFollowerCount(
@@ -48,7 +48,7 @@ export class FollowService implements Service{
   public async unfollow (
     token: string,
     userToUnfollow: UserDto
-  ): Promise<[followerCount: number, followeeCount: number]> {
+  ): Promise<{followerCount: number, followeeCount: number}> {
     // Pause so we can see the unfollow message. Remove when connected to the server
     await new Promise((f) => setTimeout(f, 2000));
 
@@ -57,7 +57,7 @@ export class FollowService implements Service{
     const followerCount = await this.getFollowerCount(token, userToUnfollow);
     const followeeCount = await this.getFolloweeCount(token, userToUnfollow);
 
-    return [followerCount, followeeCount];
+    return {followerCount, followeeCount};
   };
 
   public async getIsFollowerStatus(
@@ -72,7 +72,7 @@ export class FollowService implements Service{
   public async follow (
     token: string,
     userToFollow: UserDto
-  ): Promise<[followerCount: number, followeeCount: number]>{
+  ): Promise<{followerCount: number, followeeCount: number}>{
     // Pause so we can see the follow message. Remove when connected to the server
     await new Promise((f) => setTimeout(f, 2000));
 
@@ -81,7 +81,7 @@ export class FollowService implements Service{
     const followerCount = await this.getFollowerCount(token, userToFollow);
     const followeeCount = await this.getFolloweeCount(token, userToFollow);
 
-    return [followerCount, followeeCount];
+    return {followerCount, followeeCount};
   };
 
 
