@@ -418,7 +418,7 @@ Resources:
   getFollowerCountFunction:  
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getFollowersCountFunction  
+      FunctionName: getFollowerCountFunction  
       Handler: lambda/follow/GetFollowerCountLambda.handler
       Policies: *commonPolicies
       Events:
