@@ -4,5 +4,5 @@ import { userHandler } from "./GetCount";
 
 
 export const handler = async(request: FollowRequest): Promise<getFollowerCountResponse> => {
-    return userHandler<getFollowerCountResponse>(request, "getFolloweeCount");
+    return userHandler<getFollowerCountResponse>(request, "getFollowerCount");
 }

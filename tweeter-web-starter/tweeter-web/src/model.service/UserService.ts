@@ -33,7 +33,7 @@ export class UserService implements Service{
       lastName: lastName,
       password: password,
       alias: alias,
-      userImageBytes: userImageBytes,
+      userImageBytes: imageStringBase64,
       imageFileExtension: imageFileExtension
     });
   };

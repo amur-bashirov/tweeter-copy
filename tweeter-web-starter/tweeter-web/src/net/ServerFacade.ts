@@ -39,15 +39,21 @@ export class ServerFacade {
   }
 
   private convertStatuses(response: any): Status[] | null{
-    return response.success && response.items
-      ? response.items.map((dto: StatusDto) => Status.fromDto(dto) as Status)
+    console.log(`${response} is the response`)
+    console.log(`${response.statuses} is response.statuses`)
+    const statuses =  response.success && response.statuses
+      ? response.statuses.map((dto: StatusDto) => Status.fromDto(dto) as Status)
       : null;
+    console.log(statuses)
+    return statuses;
   }
 
   private catchErrors( response: any, message: string, ...args: any[]) {
     if (response.success) {
       for (const arg of args) {
         if (arg === null || arg === undefined) {
+          console.log(message)
+          console.log(`${arg} is null or not defined`)
           throw new Error(message);
         }
       }     

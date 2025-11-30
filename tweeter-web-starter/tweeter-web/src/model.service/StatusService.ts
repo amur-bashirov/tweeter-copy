@@ -11,12 +11,16 @@ export class StatusService implements Service{
     pageSize: number,
     lastItem: Status | null
   ): Promise<[Status[], boolean]> {
-    return await this.server.loadMoreFeedItems({
+    const [dtos, hasMore] = await this.server.loadMoreFeedItems({
       token: authToken.token,
-      userAlias: userAlias,
-      pageSize: pageSize,
+      userAlias,
+      pageSize,
       lastItem: lastItem?.dto ?? null,
     });
+
+    const statuses = dtos.map(dto => Status.fromDto(dto));
+
+    return [statuses, hasMore];
   };
   
   public async loadMoreStoryItems(

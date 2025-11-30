@@ -12,7 +12,7 @@ export class StatusService implements Service{
         ): Promise<{statuses: StatusDto[], bool: boolean}> {
           // TODO: Replace with the result of calling server
           const [statuses, bool] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
-          return {statuses, bool};
+          return { statuses: statuses.map(s => s.toDto()), bool };
         };
     
     public async loadMoreStoryItems(
@@ -23,7 +23,7 @@ export class StatusService implements Service{
       ): Promise<{statuses: StatusDto[], bool: boolean}> {
         // TODO: Replace with the result of calling server
           const [statuses, bool] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
-          return {statuses, bool};
+          return { statuses: statuses.map(s => s.toDto()), bool };
       };
 
     public async postStatus(
