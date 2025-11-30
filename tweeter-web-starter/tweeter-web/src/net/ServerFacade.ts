@@ -12,6 +12,7 @@ import {
   GetUserResponse,
   LoadMoreItemRequest,
   LoadMoreItemsResponse,
+  LoginRequest,
   PagedUserItemRequest,
   PagedUserItemResponse,
   PostStatusRequest,
@@ -189,14 +190,14 @@ export class ServerFacade {
     return status;
   }
 
-  private async createUser(
-    request: CreateUserRequest,
+  private async createUser<REQ extends LoginRequest>(
+    request: REQ,
     path: string,
     message: string
   ):  Promise<[User, AuthToken]>  {
     // Use the generic fetchAndValidate helper
     const { value, raw: response } = await this.fetchAndValidate<
-      CreateUserRequest,
+      REQ,
       CreateUserResponse,
       [User, AuthToken]
     >(request, path, message, res => [User.fromDto(res.user)!, AuthToken.fromDto(res.token)!]);
@@ -212,7 +213,7 @@ export class ServerFacade {
   }
 
   public async login(
-    request: CreateUserRequest,
+    request: LoginRequest,
   ): Promise<[User, AuthToken]>  {
     return await this.createUser(request, "/user/login","There is no User and Authtoken");
   }
