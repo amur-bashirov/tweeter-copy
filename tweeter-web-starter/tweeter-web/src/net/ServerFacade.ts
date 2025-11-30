@@ -11,30 +11,48 @@ export class ServerFacade {
 
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
-  public async getMoreFollowees(
-    request: PagedUserItemRequest
-  ): Promise<[User[], boolean]> {
-    const response = await this.clientCommunicator.doPost<
-      PagedUserItemRequest,
-      PagedUserItemResponse
-    >(request, "/followee/list");
+  private convertUsers(response: any): User[] | null{
+    return response.success && response.items
+      ? response.items.map((dto: UserDto) => User.fromDto(dto) as User)
+      : null;
+  }
 
-    // Convert the UserDto array returned by ClientCommunicator to a User array
-    const items: User[] | null =
-      response.success && response.items
-        ? response.items.map((dto) => User.fromDto(dto) as User)
-        : null;
-
-    // Handle errors
+  private catchErrors( response: any, message: string, ...args: any[]) {
     if (response.success) {
-      if (items == null) {
-        throw new Error(`No followees found`);
-      } else {
-        return [items, response.hasMore];
-      }
+      for (const arg of args) {
+        if (arg === null || arg === undefined) {
+          throw new Error(message);
+        }
+      }     
     } else {
       console.error(response);
       throw new Error(response.message ?? undefined);
     }
   }
+
+  private async getMoreUsers(request: PagedUserItemRequest, path: string, message: string): Promise<[User[], boolean]>{
+    const response = await this.clientCommunicator.doPost<
+      PagedUserItemRequest,
+      PagedUserItemResponse
+    >(request, path);
+
+    // Convert the UserDto array returned by ClientCommunicator to a User array
+    const items = this.convertUsers(response);
+    // Handle errors
+    this.catchErrors(response, message, items)
+    return [items!, response.hasMore];
+  }
+
+  public async getMoreFollowees(
+    request: PagedUserItemRequest
+  ): Promise<[User[], boolean]> {
+    return this.getMoreUsers(request, "/followees", `No followees found`)
+  }
+
+
+    public async getMoreFollowers(
+      request: PagedUserItemRequest
+    ): Promise<[User[], boolean]> {
+          return this.getMoreUsers(request, "/followers", `No followers found`)
+    }
 }
