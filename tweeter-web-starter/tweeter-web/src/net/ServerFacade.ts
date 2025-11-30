@@ -9,12 +9,19 @@ import {
   getFollowerCountResponse,
   GetIsFollowerStatusRequest,
   GetIsFollowerStatusResponse,
+  GetUserResponse,
+  LoadMoreItemRequest,
+  LoadMoreItemsResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  PostStatusRequest,
+  Status,
+  StatusDto,
   TweeterRequest,
   TweeterResponse,
   User,
   UserDto,
+  UserRequest,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -26,6 +33,12 @@ export class ServerFacade {
   private convertUsers(response: any): User[] | null{
     return response.success && response.items
       ? response.items.map((dto: UserDto) => User.fromDto(dto) as User)
+      : null;
+  }
+
+  private convertStatuses(response: any): Status[] | null{
+    return response.success && response.items
+      ? response.items.map((dto: StatusDto) => Status.fromDto(dto) as Status)
       : null;
   }
 
@@ -45,12 +58,17 @@ export class ServerFacade {
     request: REQ,
     path: string,
     message: string,
-    converter: (res: RES) => VAL | null
-  ): Promise<{ value: VAL; raw: RES }> {
+    converter?: (res: RES) => VAL | null
+  ): Promise<{ value: VAL | null; raw: RES }> {
     const response = await this.clientCommunicator.doPost<REQ, RES>(request, path);
-    const value = converter(response);
-    this.catchErrors(response, message, value);
-    return { value: value!, raw: response };
+    if (converter !== undefined){
+      const value = converter(response);
+      this.catchErrors(response, message, value);
+      return { value: value!, raw: response };
+    }else{
+      this.catchErrors(response, message, response.message);
+      return { value: null, raw: response };
+    }
   }
 
 
@@ -69,7 +87,7 @@ export class ServerFacade {
       User[]
     >(request, path, message, res => this.convertUsers(res));
 
-    return [items, response.hasMore];
+    return [items!, response.hasMore];
   }
 
 
@@ -114,7 +132,7 @@ export class ServerFacade {
         : this.isFollowerCountResponse(res) ? res.followerCount : null
     );
 
-    return count;
+    return count!;
   }
 
 
@@ -143,7 +161,7 @@ export class ServerFacade {
       [number, number]
     >(request, path, message, res => [res.followeeCount, res.followerCount]);
 
-    const [followeeCount, followerCount] = value;
+    const [followeeCount, followerCount] = value!;
     return [followeeCount, followerCount];
   }
 
@@ -167,7 +185,7 @@ export class ServerFacade {
       GetIsFollowerStatusResponse,
       boolean
     >(request, "/followers/getIsFollow", 'did not have a boolean if it has Follower or not', res => res.status);
-    const status = value;
+    const status = value!;
     return status;
   }
 
@@ -183,7 +201,7 @@ export class ServerFacade {
       [User, AuthToken]
     >(request, path, message, res => [User.fromDto(res.user)!, AuthToken.fromDto(res.token)!]);
 
-    const [user, token] = value;
+    const [user, token] = value!;
     return [user, token];
   }  
 
@@ -192,10 +210,70 @@ export class ServerFacade {
   ): Promise<[User, AuthToken]>  {
     return await this.createUser(request, "/user/create","There is no User and Authtoken");
   }
-  
+
   public async login(
     request: CreateUserRequest,
   ): Promise<[User, AuthToken]>  {
     return await this.createUser(request, "/user/login","There is no User and Authtoken");
+  }
+
+  public async getUser(
+    request: UserRequest
+  ): Promise<User | null>{
+    const { value, raw: response } = await this.fetchAndValidate<
+      UserRequest,
+      GetUserResponse,
+      User | null
+    >(request, "/user/get", "no user found", res => User.fromDto(res.user));
+    const user = value;
+    return user;
+  }
+
+  public async logout(
+    request: TweeterRequest
+  ): Promise<void> {
+    const { value, raw: response } = await this.fetchAndValidate<
+      TweeterRequest,
+      TweeterResponse,
+      User | null
+    >(request, "/user/logout", "no user found");
+  }
+
+  private async loadMoreItems(
+    request: LoadMoreItemRequest,
+    path: string,
+    message: string
+  ): Promise<[Status[], boolean]> {
+    // Use the generic fetchAndValidate helper
+    const { value, raw: response } = await this.fetchAndValidate<
+      LoadMoreItemRequest,
+      LoadMoreItemsResponse,
+      Status[]
+    >(request, path, message, res => this.convertStatuses(res));
+
+    const statuses = value!
+    return [statuses, response.bool];
+  } 
+
+  public async loadMoreFeedItems(
+    request: LoadMoreItemRequest
+  ): Promise<[Status[], boolean]>{
+    return await this.loadMoreItems(request, "/status/loadMoreFeeds", "No feeds found")
+  }
+
+  public async loadMoreStoryItems(
+    request: LoadMoreItemRequest
+  ): Promise<[Status[], boolean]>{
+    return await this.loadMoreItems(request, "/status/loadMoreStories", "No stories found")
+  }
+  
+  public async postStatus(
+    request: PostStatusRequest
+  ): Promise<void> {
+    const { value, raw: response } = await this.fetchAndValidate<
+      PostStatusRequest,
+      TweeterResponse,
+      User | null
+    >(request, "/status/post", "did not post");
   }
 }
