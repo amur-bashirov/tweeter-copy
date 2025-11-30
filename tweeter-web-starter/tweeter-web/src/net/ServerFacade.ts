@@ -1,4 +1,6 @@
 import {
+  FollowCountResponse,
+  FollowRequest,
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
@@ -50,9 +52,26 @@ export class ServerFacade {
   }
 
 
-    public async getMoreFollowers(
-      request: PagedUserItemRequest
-    ): Promise<[User[], boolean]> {
-          return this.getMoreUsers(request, "/followers", `No followers found`)
-    }
+  public async getMoreFollowers(
+    request: PagedUserItemRequest
+  ): Promise<[User[], boolean]> {
+        return this.getMoreUsers(request, "/followers", `No followers found`)
+  }
+
+  private async getCount( request: FollowRequest, path: string, message: string)
+    : Promise<number>{
+    const response = await this.clientCommunicator.doPost<
+      FollowRequest,
+      FollowCountResponse
+    >(request, path);
+    this.catchErrors(response, message, response.foll)
+    return response.number
+  }
+
+  public async getFolloweeCount( 
+    request: FollowRequest
+  ): Promise<number>{
+
+  }
+
 }

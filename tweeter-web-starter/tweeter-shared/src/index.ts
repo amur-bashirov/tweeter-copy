@@ -44,6 +44,8 @@ export type {FollowResponse} from "./model/net/response/FollowResponse";
 export type {FollowCountResponse} from "./model/net/response/FollowCountResponse";
 export type {GetIsFollowerStatusResponse} from "./model/net/response/GetIsFollowerStatusResponse";
 export type {LoadMoreItemsResponse} from "./model/net/response/LoadMoreItemsResponse";
+export type {getFolloweeCountResponse} from "./model/net/response/getFolloweeCountResponse";
+export type {getFollowerCountResponse} from "./model/net/response/getFollowerCountResponse";
 
 
 

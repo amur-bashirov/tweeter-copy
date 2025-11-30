@@ -1,8 +1,8 @@
-import { FollowCountResponse, FollowRequest } from "tweeter-shared";
+import {  FollowRequest, getFollowerCountResponse } from "tweeter-shared";
 
 import { userHandler } from "./GetCount";
 
 
-export const handler = async(request: FollowRequest): Promise<FollowCountResponse> => {
-    return userHandler(request, "getFollowerCount");
+export const handler = async(request: FollowRequest): Promise<getFollowerCountResponse> => {
+    return userHandler<getFollowerCountResponse>(request, "getFolloweeCount");
 }
