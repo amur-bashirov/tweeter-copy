@@ -12,13 +12,10 @@ export abstract class AbstractLambda<T extends TweeterRequest, S extends Service
     this.service = new serviceCtor();
     console.log("EVENT RECEIVED BY LAMBDA:", JSON.stringify(request));
 
-    // Validate required fields
     this.requreFileds<T>(request, ...requiredFields)
   }
 
-  /**
-   * Call a method on the service, with optional arguments, and automatically wrap in TweeterResponse
-   */
+
   async run<T extends TweeterRequest, R extends TweeterResponse>(
     request: T,
     methodName: keyof S,

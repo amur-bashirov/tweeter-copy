@@ -16,7 +16,7 @@ describe("ServerFacade Integration Tests", () => {
         password: "password",
         firstName: "Test",
         lastName: "User",
-        userImageBytes: base64,        // ✔ base64 string, not Uint8Array
+        userImageBytes: base64,       
         imageFileExtension: "png",
         token: "dummy-token"
     };
@@ -24,7 +24,7 @@ describe("ServerFacade Integration Tests", () => {
     const [user, token] = await server.register(request);
 
     expect(user).toBeDefined();
-    expect(user.firstName).toBe("Allen"); // FakeData returns Allen
+    expect(user.firstName).toBe("Allen"); 
     expect(token).toBeDefined();
     });
 

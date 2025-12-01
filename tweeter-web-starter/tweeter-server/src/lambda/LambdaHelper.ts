@@ -2,7 +2,7 @@ import { TweeterResponse } from "tweeter-shared";
 
 export class LambdaHelper {
 
-  /** Validate that required fields are present */
+
   static requireFields(request: any, ...fields: string[]) {
     for (const field of fields) {
       if (request[field] === undefined ) {
@@ -12,7 +12,7 @@ export class LambdaHelper {
     }
   }
 
-  /** Build a success response with correct shape */
+
   static success<RES extends TweeterResponse>(
     data: Omit<RES, "success" | "message">
   ): RES {

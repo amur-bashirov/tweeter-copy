@@ -39,12 +39,9 @@ export class ServerFacade {
   }
 
   private convertStatuses(response: any): Status[] | null{
-    console.log(`${response} is the response`)
-    console.log(`${response.statuses} is response.statuses`)
     const statuses =  response.success && response.statuses
       ? response.statuses.map((dto: StatusDto) => Status.fromDto(dto) as Status)
       : null;
-    console.log(statuses)
     return statuses;
   }
 
@@ -52,8 +49,6 @@ export class ServerFacade {
     if (response.success) {
       for (const arg of args) {
         if (arg === null || arg === undefined) {
-          console.log(message)
-          console.log(`${arg} is null or not defined`)
           throw new Error(message);
         }
       }     
@@ -88,7 +83,7 @@ export class ServerFacade {
     path: string,
     message: string
   ): Promise<[User[], boolean]> {
-    // Use the generic fetchAndValidate helper
+
     const { value: items, raw: response } = await this.fetchAndValidate<
       PagedUserItemRequest,
       PagedUserItemResponse,
@@ -162,7 +157,6 @@ export class ServerFacade {
     path: string,
     message: string
   ):  Promise<[followerCount: number , followeeCount: number ]>  {
-    // Use the generic fetchAndValidate helper
     const { value, raw: response } = await this.fetchAndValidate<
       FollowRequest,
       FollowResponse,
@@ -202,7 +196,6 @@ export class ServerFacade {
     path: string,
     message: string
   ):  Promise<[User, AuthToken]>  {
-    // Use the generic fetchAndValidate helper
     const { value, raw: response } = await this.fetchAndValidate<
       REQ,
       CreateUserResponse,
@@ -252,7 +245,6 @@ export class ServerFacade {
     path: string,
     message: string
   ): Promise<[Status[], boolean]> {
-    // Use the generic fetchAndValidate helper
     const { value, raw: response } = await this.fetchAndValidate<
       LoadMoreItemRequest,
       LoadMoreItemsResponse,

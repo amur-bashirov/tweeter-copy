@@ -7,7 +7,7 @@ export const itemsHandler = async (
   request: LoadMoreItemRequest,
   method: "loadMoreStoryItems" | "loadMoreFeedItems"
 ): Promise<LoadMoreItemsResponse> => {
-  //comment
+  
   const lastStatus: Status | null = request.lastItem
     ? Status.fromDto(request.lastItem)
     : null;
