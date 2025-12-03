@@ -24,7 +24,7 @@ describe("ServerFacade Integration Tests", () => {
     const [user, token] = await server.register(request);
 
     expect(user).toBeDefined();
-    expect(user.firstName).toBe("Allen"); 
+    expect(user.firstName).toBe("Test"); 
     expect(token).toBeDefined();
     });
 

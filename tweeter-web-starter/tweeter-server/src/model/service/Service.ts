@@ -11,7 +11,7 @@ export abstract class Service{
     }
 
     protected get userDao(): UserDao{
-        return this.userDao
+        return this._userDao
     }
     
 

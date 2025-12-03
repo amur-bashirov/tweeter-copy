@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm run compile",
+    "build": "npm run compile && cd dist && npm init -y && npm install bcryptjs",
     "compile": "npm run clean && tsc",
     "clean": "rimraf dist"
   },
