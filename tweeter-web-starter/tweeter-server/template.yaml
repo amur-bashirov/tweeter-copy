@@ -331,6 +331,7 @@ Resources:
     Properties:
       ##### TODO: Change "userGetFunction" to the actual function name.
       FunctionName: userGetFunction
+      Description: Retrieves a user by alias.
       ##### TODO: Modify Handler property to match your code. This identifies the exact function that the lambda should run.
       Handler: lambda/users/UserGetLambda.handler
       Policies: *commonPolicies
@@ -348,6 +349,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: userCreateFunction  ##### TODO: Set function name
+      Description: Registers a new user and stores credentials.
       Handler: lambda/users/UserCreateLambda.handler  ##### TODO: Set Handler
       Policies: *commonPolicies
       Events:
@@ -362,6 +364,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: userLoginFunction  ##### TODO: Set function name
+      Description: Logs in a user and returns an auth token.
       Handler: lambda/users/UserLoginLambda.handler  ##### TODO: Set Handler
       Policies: *commonPolicies
       Events:
@@ -376,6 +379,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: userLogoutFunction  ##### TODO: Set function name
+      Description: Logs out a user and invalidates their auth token.
       Handler: lambda/users/UserLogoutLambda.handler  ##### TODO: Set Handler
       Policies: *commonPolicies
       Events:
@@ -390,6 +394,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getFolloweesFunction  
+      Description: Returns a paginated list of users the given user follows.
       Handler: lambda/follow/GetFolloweesLambda.handler
       Policies: *commonPolicies
       Events:
@@ -404,6 +409,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getFollowersFunction  
+      Description: Returns a paginated list of users who follow the given user.
       Handler: lambda/follow/GetFollowersLambda.handler
       Policies: *commonPolicies
       Events:
@@ -419,6 +425,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getFollowerCountFunction  
+      Description: Returns the follower count of a user.
       Handler: lambda/follow/GetFollowerCountLambda.handler
       Policies: *commonPolicies
       Events:
@@ -433,6 +440,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: getFolloweesCountFunction  
+      Description: Returns the number of users a given user follows.
       Handler: lambda/follow/GetFolloweesCountLambda.handler
       Policies: *commonPolicies
       Events:
@@ -445,7 +453,8 @@ Resources:
   FollowFunction:  
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: FollowFunction  
+      FunctionName: FollowFunction 
+      Description: Follows another user. 
       Handler: lambda/follow/FollowLambda.handler
       Policies: *commonPolicies
       Events:
@@ -458,7 +467,8 @@ Resources:
   UnFollowFunction:  
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: UnFollowFunction  
+      FunctionName: UnFollowFunction 
+      Description: Unfollows another user. 
       Handler: lambda/follow/UnFollowLambda.handler
       Policies: *commonPolicies
       Events:
@@ -472,7 +482,8 @@ Resources:
   getIsFollowerStatusFunction:  
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getIsFollowerStatusFunction  
+      FunctionName: getIsFollowerStatusFunction 
+      Description: Checks if one user follows another user. 
       Handler: lambda/follow/GetIsFollowerStatusLambda.handler
       Policies: *commonPolicies
       Events:
@@ -486,6 +497,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: loadMoreFeedItemsFunction  
+      Description: Loads the next page of feed items.
       Handler: lambda/status/LoadMoreFeedsLambda.handler
       Policies: *commonPolicies
       Events:
@@ -499,6 +511,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: loadMoreStoryItemsFunction  
+      Description: Loads the next page of a user's story posts.
       Handler: lambda/status/LoadMoreStoryItemsLambda.handler
       Policies: *commonPolicies
       Events:
@@ -512,6 +525,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: postStatusFunction  
+      Description: Creates a new status and distributes it to followers.
       Handler: lambda/status/PostStatusLAmbda.handler
       Policies: *commonPolicies
       Events:
@@ -521,6 +535,164 @@ Resources:
             RestApiId: !Ref tweeterApi
             Path: /status/post
             Method: POST
+  # ===============================
+  # API Gateway Documentation Parts
+  # ===============================
+
+  UserGetDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /user/get
+        Method: POST
+      Properties:
+        description: "Retrieves a user by alias."
+
+  UserCreateDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /user/create
+        Method: POST
+      Properties:
+        description: "Registers a new user with alias, name, and password."
+
+  UserLoginDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /user/login
+        Method: POST
+      Properties:
+        description: "Logs in a user and returns an authentication token."
+
+  UserLogoutDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /user/logout
+        Method: POST
+      Properties:
+        description: "Logs out a user and invalidates their auth token."
+
+  GetFolloweesDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followees
+        Method: POST
+      Properties:
+        description: "Gets a paginated list of users the given user follows."
+
+  GetFollowersDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followers
+        Method: POST
+      Properties:
+        description: "Gets a paginated list of users who follow the given user."
+
+  GetFollowerCountDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followers/getCount
+        Method: POST
+      Properties:
+        description: "Returns the follower count for a user."
+
+  GetFolloweesCountDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followees/getCount
+        Method: POST
+      Properties:
+        description: "Returns the number of followees for a user."
+
+  FollowDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followers/follow
+        Method: POST
+      Properties:
+        description: "Follows another user."
+
+  UnfollowDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followers/unfollow
+        Method: POST
+      Properties:
+        description: "Unfollows a user."
+
+  GetIsFollowerStatusDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /followers/getIsFollow
+        Method: POST
+      Properties:
+        description: "Checks if one user follows another."
+
+  LoadMoreFeedItemsDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/loadMoreFeeds
+        Method: POST
+      Properties:
+        description: "Returns the next page of feed items for a user."
+
+  LoadMoreStoryItemsDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/loadMoreStories
+        Method: POST
+      Properties:
+        description: "Returns the next page of story posts for a user."
+
+  PostStatusDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      RestApiId: !Ref tweeterApi
+      Location:
+        Type: METHOD
+        Path: /status/post
+        Method: POST
+      Properties:
+        description: "Creates a new status and distributes it to followers."
+
 
   #
   # TODO: ADD MORE WEB API LAMBDA DEFINITIONS HERE
@@ -583,37 +755,40 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  followTable:  ##### TODO: Change to match the table name
+
+  TweeterUsers:  ##### TODO: Change "visitTable" to match the table name. This doesn't          
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: follow  ##### TODO: Set the actual table name
+      TableName: TweeterUsers  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
       AttributeDefinitions:
-        ##### TODO: Add attributes that will be partition or sort keys, including their datatypes (for both table and index)
-        - AttributeName: follower_alias
-          AttributeType: S
-        - AttributeName: followee_alias
-          AttributeType: S
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: alias
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
       KeySchema:
-        - AttributeName: follower_alias  ##### TODO: Set table partition key
-          KeyType: HASH
-        - AttributeName: followee_alias  ##### TODO: Set table sort key
-          KeyType: RANGE
+        - AttributeName: alias ##### TODO: Set the table partition key name
+          KeyType: HASH            #####       two lines if the table has no sort key.
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
-      GlobalSecondaryIndexes:
-        - IndexName: follow_index  ##### TODO: Set the actual index name
-          KeySchema:
-            - AttributeName: followee_alias  ##### TODO: Set index partition key
-              KeyType: HASH
-            - AttributeName: follower_alias  ##### TODO: Set index sort key
-              KeyType: RANGE
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-          Projection:
-            ProjectionType: ALL
+        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
+      
+  TweeterAuthTokens:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TweeterAuthTokens  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      AttributeDefinitions:
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: token
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+      KeySchema:
+        - AttributeName: token  ##### TODO: Set the table partition key name
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
+
+
 
   #
   # TODO: ADD MORE TABLE DEFINITIONS HERE

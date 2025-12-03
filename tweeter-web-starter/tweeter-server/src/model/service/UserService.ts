@@ -1,8 +1,21 @@
 import { Buffer } from "buffer";
 import { AuthToken, User, FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
+import { UserDao } from "../../dao/interfaces/UserDao";
+import { DaoFactory } from "../../dao/interfaces/DaoFactory";
+import bcrypt from "bcryptjs";
 
-export class UserService implements Service{
+
+
+export class UserService extends Service{
+
+
+
+    constructor(factory: DaoFactory) {
+      super(factory)
+    }
+
+
     public async getUser (
         authToken: string,
         alias: string
@@ -21,21 +34,22 @@ export class UserService implements Service{
         userImageBytes: string,
         imageFileExtension: string
       ): Promise<{user: UserDto, token:  AuthTokenDto}> {
-    
-        // TODO: Replace with the result of calling the server
-        const userImageBuffer = Buffer.from(userImageBytes, "base64");
-        const user1 = FakeData.instance.firstUser;
         
-    
-        if (user1 === null) {
-          throw new Error("Invalid registration");
-        }
+      const passwordHash = await bcrypt.hash(password, 10);
+      const userImageBuffer = Buffer.from(userImageBytes, "base64");
+      const imageUrl = "https://i.sstatic.net/l60Hf.png"; 
 
-        const user = User.toDto(user1)!
-        const token = AuthToken.toDto(FakeData.instance.authToken)!
+      const newUser: UserDto = {
+        alias,
+        firstName,
+        lastName,
+        imageUrl
+      };
 
+      await this.userDao.createUser(newUser, passwordHash);
+      const token = await this.createToken(alias)
     
-        return {user, token};
+        return { user: newUser, token };
       };
 
     public async login(
@@ -59,6 +73,16 @@ export class UserService implements Service{
     // Pause so we can see the logging out message. Delete when the call to the server is implemented.
     await new Promise((res) => setTimeout(res, 1000));
   };
+
+  private async createToken(alias: string): Promise<AuthTokenDto>{
+      const tokenValue = crypto.randomUUID();
+      const token: AuthTokenDto = {
+        token: tokenValue,
+        timestamp: Date.now()
+      };
+      await this.userDao.storeAuthToken(alias, token);
+      return token
+  }
 
 }
 

@@ -1,7 +1,12 @@
 import { Status, FakeData, StatusDto } from "tweeter-shared";
 import { Service } from "./Service";
+import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 
-export class StatusService implements Service{
+export class StatusService extends Service{
+
+    constructor(factory: DaoFactory) {
+      super(factory);
+    }
 
 
     public async loadMoreFeedItems(
@@ -10,7 +15,6 @@ export class StatusService implements Service{
           pageSize: number,
           lastItem: StatusDto | null
         ): Promise<{statuses: StatusDto[], bool: boolean}> {
-          // TODO: Replace with the result of calling server
           const [statuses, bool] = FakeData.instance.getPageOfStatuses(Status.fromDto(lastItem!), pageSize);
           return { statuses: statuses.map(s => s.toDto()), bool };
         };

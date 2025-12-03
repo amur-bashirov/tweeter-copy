@@ -2,14 +2,16 @@
 import { TweeterRequest, TweeterResponse } from "tweeter-shared";
 import { LambdaHelper } from "./LambdaHelper";
 import { Service } from "../model/service/Service";
+import { DaoFactory } from "../dao/interfaces/DaoFactory";
+import { DynamoDaoFactory } from "../dao/dynamo/DaynamoDaoFactory";
 
 export abstract class AbstractLambda<T extends TweeterRequest, S extends Service> {
   public readonly request: T;
   public readonly service: S;
 
-  constructor(request: T, serviceCtor: new () => S, requiredFields: (keyof T)[] = []) {
+  constructor(request: T, serviceCtor: new (dao: DaoFactory) => S, requiredFields: (keyof T)[] = []) {
     this.request = request;
-    this.service = new serviceCtor();
+    this.service = new serviceCtor(new DynamoDaoFactory());
     console.log("EVENT RECEIVED BY LAMBDA:", JSON.stringify(request));
 
     this.requreFileds<T>(request, ...requiredFields)
