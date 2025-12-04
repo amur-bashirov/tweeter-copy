@@ -4,16 +4,19 @@ import { Service } from "./Service";
 import { UserDao } from "../../dao/interfaces/UserDao";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import bcrypt from "bcryptjs";
+import { MediaDao } from "../../dao/interfaces/MediaDao";
 
 
 
 export class UserService extends Service{
 
     private userDao: UserDao;
+    private mediaDao: MediaDao;
 
     constructor(factory: DaoFactory) {
       super(factory)
       this.userDao = factory.createUserDao();
+      this.mediaDao = factory.createImageDao();
     }
 
 
@@ -38,7 +41,8 @@ export class UserService extends Service{
         
       const passwordHash = await bcrypt.hash(password, 10);
       const userImageBuffer = Buffer.from(userImageBytes, "base64");
-      const imageUrl = "https://i.sstatic.net/l60Hf.png"; 
+      const filename = `${alias}.${imageFileExtension}`;
+      const imageUrl = await this.mediaDao.uploadProfileImage(userImageBuffer,filename, imageFileExtension);
 
       const newUser: UserDto = {
         alias,
