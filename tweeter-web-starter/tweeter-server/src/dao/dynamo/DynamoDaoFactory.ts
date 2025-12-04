@@ -9,12 +9,17 @@ import { MediaDao } from "../interfaces/MediaDao";
 
 // Dynamo implementations (we write these later)
 import { DynamoUserDao } from "./DynamoUserDao";
+import { AuthDao } from "../interfaces/AuthDao";
+import { DynamoAuthDao } from "./DynamoAuthDao";
 // import { DynamoFollowDao } from "./DynamoFollowDao";
 // import { DynamoStatusDao } from "./DynamoStatusDao";
 // import { DynamoFeedDao } from "./DynamoFeedDao";
 // import { S3MediaDao } from "./S3MediaDao";
 
 export class DynamoDaoFactory implements DaoFactory {
+  createAuthDao(): AuthDao {
+    return new DynamoAuthDao();
+  }
 
   createUserDao(): UserDao {
     return new DynamoUserDao();

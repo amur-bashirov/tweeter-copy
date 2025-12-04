@@ -3,7 +3,7 @@ import { TweeterRequest, TweeterResponse } from "tweeter-shared";
 import { LambdaHelper } from "./LambdaHelper";
 import { Service } from "../model/service/Service";
 import { DaoFactory } from "../dao/interfaces/DaoFactory";
-import { DynamoDaoFactory } from "../dao/dynamo/DaynamoDaoFactory";
+import { DynamoDaoFactory } from "../dao/dynamo/DynamoDaoFactory";
 
 export abstract class AbstractLambda<T extends TweeterRequest, S extends Service> {
   public readonly request: T;

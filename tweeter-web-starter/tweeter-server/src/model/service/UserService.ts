@@ -9,10 +9,11 @@ import bcrypt from "bcryptjs";
 
 export class UserService extends Service{
 
-
+    private userDao: UserDao;
 
     constructor(factory: DaoFactory) {
       super(factory)
+      this.userDao = factory.createUserDao();
     }
 
 
@@ -80,7 +81,7 @@ export class UserService extends Service{
         token: tokenValue,
         timestamp: Date.now()
       };
-      await this.userDao.storeAuthToken(alias, token);
+      await this.authDao.storeAuthToken(alias, token);
       return token
   }
 
