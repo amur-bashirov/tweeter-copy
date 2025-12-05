@@ -2,15 +2,18 @@ import { factory } from "typescript";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import { UserDao } from "../../dao/interfaces/UserDao";
 import { AuthDao } from "../../dao/interfaces/AuthDao";
+import { FollowDao } from "../../dao/interfaces/FollowDao";
 
 export abstract class Service{
 
     private _authDao: AuthDao
     private _userDao: UserDao
+    private _followDao: FollowDao;
 
     constructor(factory: DaoFactory) {
         this._authDao = factory.createAuthDao();
         this._userDao = factory.createUserDao();
+        this._followDao = factory.createFollowDao();
     }
 
     protected get authDao(): AuthDao{
@@ -19,6 +22,10 @@ export abstract class Service{
 
     protected get userDao(): UserDao{
         return this._userDao
+    }
+
+    protected get followDao(): FollowDao{
+        return this._followDao
     }
 
     protected async validate(token: string): Promise<void>{

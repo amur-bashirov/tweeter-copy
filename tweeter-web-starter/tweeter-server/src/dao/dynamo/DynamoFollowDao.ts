@@ -1,6 +1,6 @@
 import { UserDto } from "tweeter-shared";
 import { FollowDao } from "../interfaces/FollowDao";
-import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, QueryCommand, QueryCommandInput } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 
@@ -10,7 +10,7 @@ export class DynamoFollowDao implements FollowDao{
 
 
     private client: DynamoDBDocumentClient;
-    private readonly TABLE_NAME = "follows";
+    private readonly TABLE_NAME = "FollowTable";
     private readonly INDEX_NAME = "follows_index";
     
     constructor() {
@@ -27,7 +27,7 @@ export class DynamoFollowDao implements FollowDao{
                 followerAlias,
                 followeeAlias,
                 },
-                ConditionExpression: "attribute_not_exists(followerAlias) AND attribute_not_exists(followeeAlias)"
+                ConditionExpression: "attribute_not_exists(followerAlias)"
             })
         );
     }
@@ -63,29 +63,34 @@ export class DynamoFollowDao implements FollowDao{
     // Get ALL followers of a user (using GSI)
     // -----------------------------------------------------
     async getFollowers(alias: string, pageSize: number, lastFollowerAlias: string | null): Promise<{ aliases: string[]; hasMore: boolean }> {
-        const params: any = {
-        TableName: this.TABLE_NAME,
-        IndexName: this.INDEX_NAME,
-        KeyConditionExpression: "followeeAlias = :alias",
-        ExpressionAttributeValues: {
-            ":alias": alias,
-        },
-        Limit: pageSize,
+        const params: QueryCommandInput = {
+            TableName: this.TABLE_NAME,
+            IndexName: this.INDEX_NAME,
+            KeyConditionExpression: "followeeAlias = :alias",
+            ExpressionAttributeValues: {
+                ":alias": { S: alias } 
+            },
+            Limit: pageSize
         };
 
         if (lastFollowerAlias) {
-        params.ExclusiveStartKey = {
-            followeeAlias: alias,
-            followerAlias: lastFollowerAlias,
-        };
+            console.log(`reached this line the lastFollowerAlias is ${lastFollowerAlias}`)
+            params.ExclusiveStartKey = {
+                followeeAlias: { S: alias },
+                followerAlias: { S: lastFollowerAlias },
+            };
         }
 
+        console.log(`about to send the query command, if it is the last one it means something happened here. Params: ${params}`)
         const result = await this.client.send(new QueryCommand(params));
+        console.log(`Did not return error at the momement of sending QueryCommand in DynamoFollowDao. Here are params: ${params}`)
 
 
         const aliases = (result.Items ?? [])
             .map(i => i.followerAlias?.S)
             .filter((alias): alias is string => typeof alias === "string");
+
+        console.log(`retireved all aliases successfuly: ${aliases}`)
 
 
 
@@ -99,26 +104,28 @@ export class DynamoFollowDao implements FollowDao{
     // Get ALL followees of a user (main table)
     // -----------------------------------------------------
     async getFollowees(alias: string, pageSize: number, lastFolloweeAlias: string | null): Promise<{ aliases: string[];  hasMore: boolean }> {
-        const params: any = {
-        TableName: this.TABLE_NAME,
-        KeyConditionExpression: "followerAlias = :alias",
-        ExpressionAttributeValues: {
-            ":alias": alias,
-        },
-        Limit: pageSize,
+        const params: QueryCommandInput = {
+            TableName: this.TABLE_NAME,
+            IndexName: this.INDEX_NAME,
+            KeyConditionExpression: "followerAlias = :alias",
+            ExpressionAttributeValues: {
+                ":alias": { S: alias } 
+            },
+            Limit: pageSize
         };
 
         if (lastFolloweeAlias) {
-        params.ExclusiveStartKey = {
-            followerAlias: alias,
-            followeeAlias: lastFolloweeAlias,
-        };
+            console.log(`reached this line the lastFollowerAlias is ${lastFolloweeAlias}`)
+            params.ExclusiveStartKey = {
+                followerAlias: { S: alias },
+                followeeAlias: { S: lastFolloweeAlias },
+            };
         }
 
         const result = await this.client.send(new QueryCommand(params));
 
         const aliases = (result.Items ?? [])
-            .map(i => i.followerAlias?.S)
+            .map(i => i.followeeAlias?.S)
             .filter((alias): alias is string => typeof alias === "string");
 
 

@@ -1,8 +1,9 @@
 
 import { UserDao } from "../interfaces/UserDao";
 import { UserDto } from "tweeter-shared";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { BatchGetItemCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class DynamoUserDao implements UserDao {
 
@@ -28,6 +29,27 @@ export class DynamoUserDao implements UserDao {
         userDto: userDto as UserDto, 
         passwordHash 
       };
+  }
+
+  async batchGetUsers(aliases: string[]): Promise<UserDto[]> {
+    if (aliases.length === 0) return [];
+
+    const keys = aliases.map(alias => ({ alias: { S: alias } }));
+
+    const command = new BatchGetItemCommand({
+      RequestItems: {
+        [this.tableName]: {
+          Keys: keys
+        }
+      }
+    });
+
+    const response = await this.client.send(command);
+    
+
+    const users = response.Responses?.[this.tableName] ?? [];
+    console.log(`retireved all users in DynamoUserDao successfuly: ${aliases}`)
+    return users.map(item => unmarshall(item) as UserDto);
   }
       
 
