@@ -9,7 +9,7 @@ import { AuthDao } from "./AuthDao";
 export interface DaoFactory {
   createUserDao(): UserDao;
   createAuthDao(): AuthDao;
-  // createFollowDao(): FollowDao;
+  createFollowDao(): FollowDao;
   // createStatusDao(): StatusDao;
   // createFeedDao(): FeedDao;
   createImageDao(): MediaDao;

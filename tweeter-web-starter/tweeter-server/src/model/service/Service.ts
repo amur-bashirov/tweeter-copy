@@ -6,13 +6,19 @@ import { AuthDao } from "../../dao/interfaces/AuthDao";
 export abstract class Service{
 
     private _authDao: AuthDao
+    private _userDao: UserDao
 
     constructor(factory: DaoFactory) {
         this._authDao = factory.createAuthDao();
+        this._userDao = factory.createUserDao();
     }
 
     protected get authDao(): AuthDao{
         return this._authDao
+    }
+
+    protected get userDao(): UserDao{
+        return this._userDao
     }
 
     protected async validate(token: string): Promise<void>{

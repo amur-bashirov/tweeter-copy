@@ -10,12 +10,11 @@ import { MediaDao } from "../../dao/interfaces/MediaDao";
 
 export class UserService extends Service{
 
-  private userDao: UserDao;
+
   private mediaDao: MediaDao;
 
   constructor(factory: DaoFactory) {
     super(factory)
-    this.userDao = factory.createUserDao();
     this.mediaDao = factory.createImageDao();
   }
 
