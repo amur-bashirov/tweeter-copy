@@ -76,8 +76,8 @@ export class DynamoFollowDao implements FollowDao{
         if (lastFollowerAlias) {
             console.log(`reached this line the lastFollowerAlias is ${lastFollowerAlias}`)
             params.ExclusiveStartKey = {
-                followeeAlias: { S: alias },
                 followerAlias: { S: lastFollowerAlias },
+                followeeAlias: { S: alias }
             };
         }
 
@@ -106,7 +106,7 @@ export class DynamoFollowDao implements FollowDao{
     async getFollowees(alias: string, pageSize: number, lastFolloweeAlias: string | null): Promise<{ aliases: string[];  hasMore: boolean }> {
         const params: QueryCommandInput = {
             TableName: this.TABLE_NAME,
-            IndexName: this.INDEX_NAME,
+            IndexName: "GSI_Followees",
             KeyConditionExpression: "followerAlias = :alias",
             ExpressionAttributeValues: {
                 ":alias": { S: alias } 
@@ -126,7 +126,7 @@ export class DynamoFollowDao implements FollowDao{
 
         const aliases = (result.Items ?? [])
             .map(i => i.followeeAlias?.S)
-            .filter((alias): alias is string => typeof alias === "string");
+            .filter((x): x is string => typeof x === "string");
 
 
 

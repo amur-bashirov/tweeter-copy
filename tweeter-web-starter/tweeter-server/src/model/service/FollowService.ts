@@ -39,7 +39,9 @@ export class FollowService extends Service{
     const { aliases, hasMore } = await fn(userAlias, pageSize, lastAlias);
     console.log(`sussessfuly reatrived users aliases: ${aliases}`)
 
-    const items = await this.userDao.batchGetUsers(aliases);
+
+    const uniqueAliases = [...new Set(aliases as string[])];
+    const items = await this.userDao.batchGetUsers(uniqueAliases);
     console.log(`retrieved items: ${items}`)
     return {items, hasMore}
   }

@@ -12,7 +12,7 @@ describe("ServerFacade Integration Tests", () => {
     const base64 = Buffer.from(bytes).toString("base64");
 
     const request = {
-        alias: "@newuser",
+        alias: "@newTestuser",
         password: "password",
         firstName: "Test",
         lastName: "User",

@@ -91,7 +91,5 @@ export class FollowService implements Service{
       user: userToFollow?.dto ?? null,
     });
   }
-
-
   
 }

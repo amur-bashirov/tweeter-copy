@@ -684,6 +684,7 @@ Resources:
         WriteCapacityUnits: 5  #####       one is fine for now, but you may need to change them later.
       ##### TODO: If you don't need an index for this table, delete the GlobalSecondaryIndexes property and all its subproperties.
       GlobalSecondaryIndexes:
+      
         - IndexName: follows_index  ##### TODO: Set the actual index name. This is what your code will use to identify this index.
           KeySchema:
             - AttributeName: followeeAlias  ##### TODO: Set the index partition key name
@@ -693,4 +694,16 @@ Resources:
             WriteCapacityUnits: 5  #####       capacities that you may need to change.
           Projection:
             ProjectionType: ALL
+
+        - IndexName: GSI_Followees
+          KeySchema:
+            - AttributeName: followerAlias
+              KeyType: HASH
+            - AttributeName: followeeAlias
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
   
