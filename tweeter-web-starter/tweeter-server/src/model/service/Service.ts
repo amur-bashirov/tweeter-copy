@@ -14,17 +14,23 @@ export abstract class Service{
     protected get authDao(): AuthDao{
         return this._authDao
     }
+
+    protected async validate(token: string): Promise<void>{
+        const valid = await this.validateToken(token);
+        if (!valid){ throw new Error("Token has expired")}
+    }
     
 
-    protected async validateToken(tokenString: string): Promise<boolean> {
+    private async validateToken(tokenString: string): Promise<boolean> {
         const tokenEntry = await this._authDao.getAuthToken(tokenString);
         
 
         if (!tokenEntry) return false;
         if (Date.now() > tokenEntry.expiresAt) return false;
+        console.log(`date is ${Date.now()} and expirsAt ${tokenEntry.expiresAt} and it is ${Date.now() > tokenEntry.expiresAt}`)
 
 
-        await this._authDao.updateTokenExpiration(tokenString);
+        await this._authDao.updateTokenExpiration(tokenEntry.alias, tokenEntry.dto);
 
         return true;
     }

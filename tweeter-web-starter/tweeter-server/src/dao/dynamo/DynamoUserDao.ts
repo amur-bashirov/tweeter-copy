@@ -14,18 +14,18 @@ export class DynamoUserDao implements UserDao {
     this.client = DynamoDBDocumentClient.from(baseClient);
   }
  
-  async getUserByAliasWithHash(alias: string): Promise<{ user: UserDto | null; passwordHash?: string }> {
+  async getUserByAliasWithHash(alias: string): Promise<{ userDto: UserDto | null; passwordHash?: string }> {
     const result = await this.client.send(new GetCommand({
       TableName: this.tableName,
       Key: { alias }
     }));
 
 
-    if (!result.Item) return { user: null };
+    if (!result.Item) return { userDto: null };
     const { passwordHash, ...userDto } = result.Item;
 
     return { 
-        user: userDto as UserDto, 
+        userDto: userDto as UserDto, 
         passwordHash 
       };
   }
@@ -34,6 +34,8 @@ export class DynamoUserDao implements UserDao {
 
 
   async createUser(user: UserDto, passwordHash: string): Promise<UserDto> {
+    const existingUser = await this.getUserByAlias(user.alias);
+    if (existingUser) { throw new Error("User with this alias already exists")};
     await this.client.send(new PutCommand({
       TableName: this.tableName,
       Item: {

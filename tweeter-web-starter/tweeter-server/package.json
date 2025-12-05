@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm run compile && cd dist && npm init -y && npm install bcryptjs",
+    "build": "npm run compile && npm run configure_dist && npm run sam",
     "compile": "npm run clean && tsc",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "configure_dist": "cd dist && npm init -y && npm install bcryptjs",
+    "sam": "sam build && sam deploy --guided"
   },
   "keywords": [],
   "author": "",
