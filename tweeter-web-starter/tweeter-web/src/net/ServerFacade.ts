@@ -161,7 +161,7 @@ export class ServerFacade {
       FollowRequest,
       FollowResponse,
       [number, number]
-    >(request, path, message, res => [res.followeeCount, res.followerCount]);
+    >(request, path, message, res => [res.followerCount, res.followeeCount]);
 
     const [followeeCount, followerCount] = value!;
     return [followeeCount, followerCount];
