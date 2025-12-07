@@ -100,6 +100,7 @@ export class ServerFacade {
   public async getMoreFollowees(
     request: PagedUserItemRequest
   ): Promise<[User[], boolean]> {
+    console.log("getMoreFollowers() CALLED");
     return await this.getMoreUsers(request, "/followees", `No followees found`)
   }
 
@@ -107,6 +108,7 @@ export class ServerFacade {
   public async getMoreFollowers(
     request: PagedUserItemRequest
   ): Promise<[User[], boolean]> {
+    console.log("getMoreFollowees() CALLED");
     return await this.getMoreUsers(request, "/followers", `No followers found`)
   }
 
@@ -128,6 +130,7 @@ export class ServerFacade {
     path: string,
     getFollowees: boolean
   ): Promise<number> {
+    
     const { value: count, raw: response } = await this.fetchAndValidate<
       FollowRequest,
       FollowCountResponse,
@@ -146,12 +149,14 @@ export class ServerFacade {
   public async getFolloweeCount( 
     request: FollowRequest
   ): Promise<number>{
+    console.log("getFolloweecount() CALLED");
     return await this.getCount(request,"/followees/getCount", true)
   }
 
   public async getFollowerCount( 
     request: FollowRequest
   ): Promise<number>{
+    console.log("getFollowerCount CALLED");
     return await this.getCount(request,"/followers/getCount", false)
   }
 
@@ -173,12 +178,14 @@ export class ServerFacade {
   public async follow(
     request: FollowRequest,
   ): Promise<[followerCount: number, followeeCount: number]>{
+    console.log("follow CALLED");
     return await this.following(request, "/followers/follow", 'No count of followees and followers')
   }
 
   public async unFollow(
     request: FollowRequest,
   ): Promise<[followerCount: number, followeeCount: number]>{
+    console.log("unfollow CALLED");
     return await this.following(request, "/followers/unfollow", 'No count of followees and followers')
   }
 
@@ -261,12 +268,14 @@ export class ServerFacade {
   public async loadMoreFeedItems(
     request: LoadMoreItemRequest
   ): Promise<[Status[], boolean]>{
+
     return await this.loadMoreItems(request, "/status/loadMoreFeeds", "No feeds found")
   }
 
   public async loadMoreStoryItems(
     request: LoadMoreItemRequest
   ): Promise<[Status[], boolean]>{
+    console.log("loadMoreStoryItems CALLED");
     return await this.loadMoreItems(request, "/status/loadMoreStories", "No stories found")
   }
   

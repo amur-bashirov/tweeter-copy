@@ -10,6 +10,7 @@ export class FolloweePresenter extends UserItemPresenter{
     return "load followees";
   }
   protected getMoreItems(authToken: AuthToken, userAlias: string): Promise<[User[], boolean]> {
+    console.log("loadmoreFollowees caled in presenter CALLED");
     return this.service.loadMoreFollowees(authToken, userAlias, PAGE_SIZE, this.lastItem)
   }
 }
