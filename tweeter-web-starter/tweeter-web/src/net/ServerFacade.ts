@@ -49,6 +49,7 @@ export class ServerFacade {
     if (response.success) {
       for (const arg of args) {
         if (arg === null || arg === undefined) {
+          console.log(`Here is the error message: ${message}`)
           throw new Error(message);
         }
       }     
@@ -69,7 +70,9 @@ export class ServerFacade {
       this.catchErrors(response, message, value);
       return { value: value!, raw: response };
     }else{
-      this.catchErrors(response, message, response.message);
+      if (!response.success) {
+        throw new Error(response.message ?? message);
+      }
       return { value: null, raw: response };
     }
   }
