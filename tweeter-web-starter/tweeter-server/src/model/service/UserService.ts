@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 import { UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
-import { UserDao } from "../../dao/interfaces/UserDao";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import bcrypt from "bcryptjs";
 import { MediaDao } from "../../dao/interfaces/MediaDao";
