@@ -100,6 +100,36 @@ export class DynamoFollowDao implements FollowDao{
         };
     }
 
+    async loadFollowers(alias: string): Promise<string[]> {
+        const allAliases: string[] = [];
+        let lastKey: Record<string, any> | undefined = undefined;
+
+        do {
+            const params: QueryCommandInput = {
+            TableName: this.TABLE_NAME,
+            IndexName: this.INDEX_NAME,
+            KeyConditionExpression: "followeeAlias = :alias",
+            ExpressionAttributeValues: {
+                ":alias": { S: alias }
+            },
+            ExclusiveStartKey: lastKey
+            };
+
+            const result = await this.client.send(new QueryCommand(params));
+
+            const pageAliases = (result.Items ?? [])
+            .map(i => i.followerAlias?.S)
+            .filter((a): a is string => typeof a === "string");
+
+            allAliases.push(...pageAliases);
+
+            lastKey = result.LastEvaluatedKey;
+        } while (lastKey);
+
+        return allAliases;
+    }
+
+
     // -----------------------------------------------------
     // Get ALL followees of a user (main table)
     // -----------------------------------------------------

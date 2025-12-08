@@ -706,4 +706,43 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
-  
+        
+  StoriesTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: StoriesTable  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      AttributeDefinitions:
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: authorAlias
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+        - AttributeName: timestamp
+          AttributeType: N  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+      KeySchema:
+        - AttributeName: authorAlias  ##### TODO: Set the table partition key name
+          KeyType: HASH
+        - AttributeName: timestamp  ##### TODO: Set the table partition key name
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 1 
+
+  FeedsTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: FeedsTable  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      AttributeDefinitions:
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: userAlias
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+        - AttributeName: timestamp
+          AttributeType: N  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+      KeySchema:
+        - AttributeName: userAlias  ##### TODO: Set the table partition key name
+          KeyType: HASH
+        - AttributeName: timestamp  ##### TODO: Set the table partition key name
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 1 

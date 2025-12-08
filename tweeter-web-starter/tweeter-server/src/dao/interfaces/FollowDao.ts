@@ -20,5 +20,6 @@ export interface FollowDao {
 
   getFollowerCount(alias: string): Promise<number>;
   getFolloweeCount(alias: string): Promise<number>;
+  loadFollowers(alias: string): Promise<string[]>;
 }
 

@@ -110,15 +110,15 @@ export class FollowService extends Service{
         followeeCount: followeeCount
       };
   }
-
   private async getUser(token: string): Promise<{user:UserDto}> {
     const tokenEntry = await this.authDao.getAuthToken(token);
     if (!tokenEntry) throw new Error("Invalid token");
     const follower = await this.userDao.getUserByAlias(tokenEntry.alias);
     if (!follower) throw new Error("User not found");
     return { user: follower };
-
   }
+
+
 
 
 }

@@ -10,7 +10,7 @@ export interface DaoFactory {
   createUserDao(): UserDao;
   createAuthDao(): AuthDao;
   createFollowDao(): FollowDao;
-  // createStatusDao(): StatusDao;
-  // createFeedDao(): FeedDao;
+  createStatusDao(): StatusDao;
+  createFeedDao(): FeedDao;
   createImageDao(): MediaDao;
 }

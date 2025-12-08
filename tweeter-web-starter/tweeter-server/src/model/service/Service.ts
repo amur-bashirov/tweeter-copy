@@ -1,4 +1,3 @@
-import { factory } from "typescript";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import { UserDao } from "../../dao/interfaces/UserDao";
 import { AuthDao } from "../../dao/interfaces/AuthDao";
