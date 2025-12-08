@@ -1,4 +1,4 @@
-import { Status, FakeData, StatusDto } from "tweeter-shared";
+import { Status, StatusDto } from "tweeter-shared";
 import { Service } from "./Service";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import { FeedDao } from "../../dao/interfaces/FeedDao";
