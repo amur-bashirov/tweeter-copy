@@ -37,10 +37,10 @@ export class DynamoAuthDao implements AuthDao{
   
 
   
-  async updateTokenExpiration(alias: string, token: AuthTokenDto): Promise<void>{
-    await this.revokeAuthToken(token.token);
-    await this.storeAuthToken(alias, token);
-  }
+  // async updateTokenExpiration(alias: string, token: AuthTokenDto): Promise<void>{
+  //   await this.revokeAuthToken(token.token);
+  //   await this.storeAuthToken(alias, token);
+  // }
 
 
 

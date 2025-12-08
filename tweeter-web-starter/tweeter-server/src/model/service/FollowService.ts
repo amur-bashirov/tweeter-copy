@@ -103,11 +103,11 @@ export class FollowService extends Service{
     await fn(followerAlias, followeeAlias);
 
 
-    const followerCount = await this.getFollowerCount(token, followee);
-    const followeeCount = await this.getFolloweeCount(token, follower.user!);
+    const followerCount = await this.followDao.getFollowerCount(followee.alias);
+    const followeeCount = await this.followDao.getFolloweeCount( followee.alias);
       return {
-        followerCount: followerCount.followerCount,
-        followeeCount: followeeCount.followeeCount
+        followerCount: followerCount,
+        followeeCount: followeeCount
       };
   }
 

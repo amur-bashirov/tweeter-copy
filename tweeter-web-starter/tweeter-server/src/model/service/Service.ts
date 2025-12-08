@@ -43,7 +43,7 @@ export abstract class Service{
         console.log(`date is ${Date.now()} and expirsAt ${tokenEntry.expiresAt} and it is ${Date.now() > tokenEntry.expiresAt}`)
 
 
-        await this._authDao.updateTokenExpiration(tokenEntry.alias, tokenEntry.dto);
+        await this._authDao.storeAuthToken(tokenEntry.alias,tokenEntry.dto);
 
         return true;
     }
