@@ -45,12 +45,24 @@ export class DynamoUserDao implements UserDao {
     });
 
     const response = await this.client.send(command);
-    
 
-    const users = response.Responses?.[this.tableName] ?? [];
-    console.log(`retireved all users in DynamoUserDao successfuly: ${aliases}`)
-    return users.map(item => unmarshall(item) as UserDto);
+    const items = response.Responses?.[this.tableName] ?? [];
+
+
+    const users = items.map(item => unmarshall(item) as UserDto);
+
+
+    const orderMap = new Map(aliases.map((a, i) => [a, i]));
+
+    users.sort((a, b) => {
+      return orderMap.get(a.alias)! - orderMap.get(b.alias)!;
+    });
+
+    console.log("users in correct original order:", JSON.stringify(users, null, 2));
+
+    return users;
   }
+
       
 
 

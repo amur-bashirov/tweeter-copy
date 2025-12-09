@@ -7,7 +7,7 @@ import { StatusDao } from "../interfaces/StatusDao";
 import { FeedDao } from "../interfaces/FeedDao";
 import { MediaDao } from "../interfaces/MediaDao";
 
-// Dynamo implementations (we write these later)
+
 import { AuthDao } from "../interfaces/AuthDao";
 import { DynamoAuthDao } from "./DynamoAuthDao";
  import { DynamoFollowDao } from "./DynamoFollowDao";

@@ -43,9 +43,7 @@ export class DynamoFollowDao implements FollowDao{
         );
     }
 
-    // -----------------------------------------------------
-    // Check if follower follows followee
-    // -----------------------------------------------------
+
     async isFollowing(followerAlias: string, followeeAlias: string): Promise<boolean> {
         const result = await this.client.send(
             new GetCommand({
@@ -59,9 +57,7 @@ export class DynamoFollowDao implements FollowDao{
         return !!result.Item;
     }
 
-    // -----------------------------------------------------
-    // Get ALL followers of a user (using GSI)
-    // -----------------------------------------------------
+
     async getFollowers(alias: string, pageSize: number, lastFollowerAlias: string | null): Promise<{ aliases: string[]; hasMore: boolean }> {
         const params: QueryCommandInput = {
             TableName: this.TABLE_NAME,
@@ -70,7 +66,9 @@ export class DynamoFollowDao implements FollowDao{
             ExpressionAttributeValues: {
                 ":alias": { S: alias } 
             },
-            Limit: pageSize
+            Limit: pageSize,
+            ScanIndexForward: true
+
         };
 
         if (lastFollowerAlias) {
@@ -130,9 +128,7 @@ export class DynamoFollowDao implements FollowDao{
     }
 
 
-    // -----------------------------------------------------
-    // Get ALL followees of a user (main table)
-    // -----------------------------------------------------
+
     async getFollowees(alias: string, pageSize: number, lastFolloweeAlias: string | null): Promise<{ aliases: string[];  hasMore: boolean }> {
         const params: QueryCommandInput = {
             TableName: this.TABLE_NAME,
@@ -153,6 +149,7 @@ export class DynamoFollowDao implements FollowDao{
         }
 
         const result = await this.client.send(new QueryCommand(params));
+        console.log(`${result.Items}`)
 
         const aliases = (result.Items ?? [])
             .map(i => i.followeeAlias?.S)
@@ -166,9 +163,10 @@ export class DynamoFollowDao implements FollowDao{
         };
     }
 
-    // -----------------------------------------------------
-    // Count followers using GSI
-    // -----------------------------------------------------
+
+
+
+
     async getFollowerCount(alias: string): Promise<number> {
         const result = await this.client.send(
         new QueryCommand({
@@ -185,9 +183,6 @@ export class DynamoFollowDao implements FollowDao{
         return result.Count ?? 0;
     }
 
-    // -----------------------------------------------------
-    // Count followees using main table
-    // -----------------------------------------------------
     async getFolloweeCount(alias: string): Promise<number> {
         const result = await this.client.send(
         new QueryCommand({
