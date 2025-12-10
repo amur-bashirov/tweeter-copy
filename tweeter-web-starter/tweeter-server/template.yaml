@@ -305,6 +305,12 @@ Resources:
   #     Properties:
   #       QueueName: MyQueue
 
+  FeedQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: FeedQueue
+
+
 
   #
   # Lambda Layer (reused by all Lambda functions)
@@ -558,6 +564,19 @@ Resources:
   #           Properties:
   #             Queue: !GetAtt MyQueue.Arn
   #             Enabled: true
+
+  MyQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FeedQueueFunction
+      Handler: lambda/feed-update/index.handler
+      Policies: *commonPolicies
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt FeedQueue.Arn
+            Enabled: true
 
 
   #

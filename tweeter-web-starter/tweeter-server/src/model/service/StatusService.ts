@@ -3,16 +3,21 @@ import { Service } from "./Service";
 import { DaoFactory } from "../../dao/interfaces/DaoFactory";
 import { FeedDao } from "../../dao/interfaces/FeedDao";
 import { StatusDao } from "../../dao/interfaces/StatusDao";
+import { FeedQueueService } from "./FeedQueueService";
 
 export class StatusService extends Service{
 
     private feedDao: FeedDao;
-    private statusDao: StatusDao
+    private statusDao: StatusDao;
+    private feedQueue: FeedQueueService;
 
     constructor(factory: DaoFactory) {
       super(factory);
       this.feedDao = factory.createFeedDao();
       this.statusDao = factory.createStatusDao();
+        this.feedQueue = new FeedQueueService(
+        "https://sqs.us-east-1.amazonaws.com/831926593577/FeedQueue"
+      );
     }
 
 
@@ -54,32 +59,52 @@ export class StatusService extends Service{
     }
 
 
+  public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
+    await this.validate(token);
 
-    public async postStatus(
-    token: string,
-    newStatus: StatusDto
-    ): Promise<void>{
-      await this.validate(token);
+    const tokenEntry = await this.authDao.getAuthToken(token);
+    if (!tokenEntry) throw new Error("Invalid token");
 
-      const tokenEntry = await this.authDao.getAuthToken(token);
-      if (!tokenEntry) throw new Error("Invalid token");
+    // 1. Write to stories table immediately
+    await this.statusDao.postStatus(newStatus);
 
-      await this.statusDao.postStatus(newStatus);
+    // 2. Load followers
+    const followers = await this.followDao.loadFollowers(tokenEntry.alias);
 
-      const aliases = await this.followDao.loadFollowers(tokenEntry.alias)
-      console.log(`Here are all the followers ${aliases}`);
+    // 3. Send SQS messages
+    for (const followerAlias of followers) {
+      await this.feedQueue.enqueueStatusForFollower(followerAlias, newStatus);
+    }
+}
 
-      const batchItems = aliases.map(a => ({
-          followerAlias: a,
-          status: newStatus
-      }));
 
-      await this.feedDao.addStatusesToFeedBatch(batchItems);
+
+
+    // public async postStatus(
+    // token: string,
+    // newStatus: StatusDto
+    // ): Promise<void>{
+    //   await this.validate(token);
+
+    //   const tokenEntry = await this.authDao.getAuthToken(token);
+    //   if (!tokenEntry) throw new Error("Invalid token");
+
+    //   await this.statusDao.postStatus(newStatus);
+
+    //   const aliases = await this.followDao.loadFollowers(tokenEntry.alias)
+    //   console.log(`Here are all the followers ${aliases}`);
+
+    //   const batchItems = aliases.map(a => ({
+    //       followerAlias: a,
+    //       status: newStatus
+    //   }));
+
+    //   await this.feedDao.addStatusesToFeedBatch(batchItems);
       
-      // for (const followerAlias of aliases) {
-      //   await this.feedDao.addStatusToFeed(followerAlias, newStatus);
-      // }
+    //   // for (const followerAlias of aliases) {
+    //   //   await this.feedDao.addStatusToFeed(followerAlias, newStatus);
+    //   // }
 
-    };
+    // };
     
 }
