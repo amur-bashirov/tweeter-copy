@@ -47,7 +47,7 @@ export class DynamoAuthDao implements AuthDao{
 
 
   async storeAuthToken(alias: string, token: AuthTokenDto): Promise<void> {
-    const expiresAt = Date.now() + 100 * 60 * 1000;
+    const expiresAt = Date.now() + 5 * 60 * 1000;
     await this.client.send(new PutCommand({
       TableName: this.authTokenTable,
       Item: {
