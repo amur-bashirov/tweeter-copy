@@ -10,9 +10,9 @@ export class FeedQueueService {
     this.queueUrl = queueUrl;
   }
 
-  async enqueueStatusForFollower(followerAlias: string, status: StatusDto) {
+  async enqueueFollowers(followers: string[], status: StatusDto) {
     const message = {
-      followerAlias,
+      followers,
       status
     };
 
@@ -23,4 +23,5 @@ export class FeedQueueService {
       })
     );
   }
+
 }

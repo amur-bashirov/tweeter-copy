@@ -305,10 +305,15 @@ Resources:
   #     Properties:
   #       QueueName: MyQueue
 
-  FeedQueue:
+  PrimaryQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: FeedQueue
+      QueueName: PrimaryQueue
+
+  SecondaryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: SecondaryQueue
 
 
 
@@ -565,17 +570,30 @@ Resources:
   #             Queue: !GetAtt MyQueue.Arn
   #             Enabled: true
 
-  MyQueueFunction:
+  PrimaryQueueFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: FeedQueueFunction
-      Handler: lambda/feed-update/index.handler
+      FunctionName: PrimaryQueueFunction
+      Handler: lambda/feed-update/primary.handler
       Policies: *commonPolicies
       Events:
         SQSTrigger:
           Type: SQS
           Properties:
-            Queue: !GetAtt FeedQueue.Arn
+            Queue: !GetAtt PrimaryQueue.Arn
+            Enabled: true
+
+  SecondaryQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: SecondaryQueueFunction
+      Handler: lambda/feed-update/secondary.handler
+      Policies: *commonPolicies
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SecondaryQueue.Arn
             Enabled: true
 
 
@@ -649,83 +667,10 @@ Resources:
   #           ProjectionType: ALL
 
 
-  TweeterUsers:  ##### TODO: Change "visitTable" to match the table name. This doesn't          
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: TweeterUsers  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
-      AttributeDefinitions:
-        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: alias
-          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-      KeySchema:
-        - AttributeName: alias ##### TODO: Set the table partition key name
-          KeyType: HASH            #####       two lines if the table has no sort key.
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
-      
-  TweeterAuthTokens:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: TweeterAuthTokens  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
-      AttributeDefinitions:
-        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: token
-          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-      KeySchema:
-        - AttributeName: token  ##### TODO: Set the table partition key name
-          KeyType: HASH
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 1  #####       one is fine for now, but you may need to change them later.
 
-  FollowTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't
-               #####       need to be the actual table name, just a unique identifier.
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: FollowTable  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
-      AttributeDefinitions:
-        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: followerAlias
-          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-        - AttributeName: followeeAlias
-          AttributeType: S
-      KeySchema:
-        - AttributeName: followerAlias  ##### TODO: Set the table partition key name
-          KeyType: HASH
-        - AttributeName: followeeAlias  ##### TODO: Set the table sort key name. Delete these
-          KeyType: RANGE             #####       two lines if the table has no sort key.
-      BillingMode: PROVISIONED
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 5  #####       one is fine for now, but you may need to change them later.
-      ##### TODO: If you don't need an index for this table, delete the GlobalSecondaryIndexes property and all its subproperties.
-      GlobalSecondaryIndexes:
-      
-        - IndexName: follows_index  ##### TODO: Set the actual index name. This is what your code will use to identify this index.
-          KeySchema:
-            - AttributeName: followeeAlias  ##### TODO: Set the index partition key name
-              KeyType: HASH
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5   ##### TODO: Same thing. Indexes have their own read/write
-            WriteCapacityUnits: 5  #####       capacities that you may need to change.
-          Projection:
-            ProjectionType: ALL
 
-        - IndexName: GSI_Followees
-          KeySchema:
-            - AttributeName: followerAlias
-              KeyType: HASH
-            - AttributeName: followeeAlias
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
-          ProvisionedThroughput:
-            ReadCapacityUnits: 5
-            WriteCapacityUnits: 5
-        
+
+      
   StoriesTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
     Type: AWS::DynamoDB::Table
     Properties:
@@ -746,22 +691,82 @@ Resources:
         ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
         WriteCapacityUnits: 1 
 
-  FeedsTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
+
+  FollowTable:  ##### TODO: Change "visitTable" to match the table name. This doesn't
+               #####       need to be the actual table name, just a unique identifier.
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: FeedsTable  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      TableName: FollowTable  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
       AttributeDefinitions:
         ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
-        - AttributeName: userAlias
+        - AttributeName: followerAlias
           AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
-        - AttributeName: timestamp
-          AttributeType: N  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+        - AttributeName: followeeAlias
+          AttributeType: S
       KeySchema:
-        - AttributeName: userAlias  ##### TODO: Set the table partition key name
+        - AttributeName: followerAlias  ##### TODO: Set the table partition key name
           KeyType: HASH
-        - AttributeName: timestamp  ##### TODO: Set the table partition key name
-          KeyType: RANGE
+        - AttributeName: followeeAlias  ##### TODO: Set the table sort key name. Delete these
+          KeyType: RANGE             #####       two lines if the table has no sort key.
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1   ##### TODO: Set the table's Read and Write capacities. Leaving these at
-        WriteCapacityUnits: 1 
+        ReadCapacityUnits: 200   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 200  #####       one is fine for now, but you may need to change them later.
+      ##### TODO: If you don't need an index for this table, delete the GlobalSecondaryIndexes property and all its subproperties.
+      GlobalSecondaryIndexes:
+      
+        - IndexName: follows_index  ##### TODO: Set the actual index name. This is what your code will use to identify this index.
+          KeySchema:
+            - AttributeName: followeeAlias  ##### TODO: Set the index partition key name
+              KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 200   ##### TODO: Same thing. Indexes have their own read/write
+            WriteCapacityUnits: 200  #####       capacities that you may need to change.
+          Projection:
+            ProjectionType: ALL
+
+        - IndexName: GSI_Followees
+          KeySchema:
+            - AttributeName: followerAlias
+              KeyType: HASH
+            - AttributeName: followeeAlias
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 200
+            WriteCapacityUnits: 200
+
+
+  TweeterUsers:  ##### TODO: Change "visitTable" to match the table name. This doesn't          
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TweeterUsers  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      AttributeDefinitions:
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: alias
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+      KeySchema:
+        - AttributeName: alias ##### TODO: Set the table partition key name
+          KeyType: HASH            #####       two lines if the table has no sort key.
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 200   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 200  #####       one is fine for now, but you may need to change them later.
+      
+  TweeterAuthTokens:  ##### TODO: Change "visitTable" to match the table name. This doesn't        #####       need to be the actual table name, just a unique identifier.
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TweeterAuthTokens  ##### TODO: Set the actual table name. This is what your code will use to identify this table.
+      AttributeDefinitions:
+        ##### TODO: Add any attributes that will be used as partition or sort keys for the table or any indexes.
+        - AttributeName: token
+          AttributeType: S  ##### TODO: Set the data type for this attribute. S for string, N for number, etc.
+      KeySchema:
+        - AttributeName: token  ##### TODO: Set the table partition key name
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 200   ##### TODO: Set the table's Read and Write capacities. Leaving these at
+        WriteCapacityUnits: 200  #####       one is fine for now, but you may need to change them later.
+
