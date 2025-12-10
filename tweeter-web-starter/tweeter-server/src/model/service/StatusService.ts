@@ -67,11 +67,18 @@ export class StatusService extends Service{
       await this.statusDao.postStatus(newStatus);
 
       const aliases = await this.followDao.loadFollowers(tokenEntry.alias)
-      console.log(`Here are all the followers ${aliases}`)
+      console.log(`Here are all the followers ${aliases}`);
+
+      const batchItems = aliases.map(a => ({
+          followerAlias: a,
+          status: newStatus
+      }));
+
+      await this.feedDao.addStatusesToFeedBatch(batchItems);
       
-      for (const followerAlias of aliases) {
-        await this.feedDao.addStatusToFeed(followerAlias, newStatus);
-      }
+      // for (const followerAlias of aliases) {
+      //   await this.feedDao.addStatusToFeed(followerAlias, newStatus);
+      // }
 
     };
     

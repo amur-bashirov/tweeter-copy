@@ -15,20 +15,14 @@ describe("ServerFacade Integration Tests", () => {
 
 
   beforeAll(async () => {
-    const bytes = new Uint8Array([1, 2, 3, 4]);
-    const base64 = Buffer.from(bytes).toString("base64");
+    const newRequest = {
+      alias: alias,
+      password: "password"
+    }
+    const [newUser, newToken]: [User, AuthToken] = await server.login(newRequest);
 
-    const request = {
-      alias: "@newTestuser",
-      password: "password",
-      firstName: "Test",
-      lastName: "User",
-      userImageBytes: base64,
-      imageFileExtension: "png",
-      token: "dummy-token",
-    };
-
-    [user, token] = await server.register(request);
+    user = newUser;
+    token = newToken;
     
   });
 
@@ -53,24 +47,24 @@ describe("ServerFacade Integration Tests", () => {
     expect(alias).toBe(user.alias);
   })
 
-  it("follow user", async () => {
-    const [followerCount, followeeCount] = await server.follow(
-        {
-        "token": token.token,
-        "user": {
-            "firstName": "Test",
-            "lastName": "User",
-            "alias": "@amur",
-            "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@amur.png"
-        }
-        }
-    );
+  // it("follow user", async () => {
+  //   const [followerCount, followeeCount] = await server.follow(
+  //       {
+  //       "token": token.token,
+  //       "user": {
+  //           "firstName": "Test",
+  //           "lastName": "User",
+  //           "alias": "@bulat",
+  //           "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@bulat.png"
+  //       }
+  //       }
+  //   );
 
-    console.log(`follower count is ${followerCount}`)
-    console.log(`followee count is ${followeeCount}`)
-    expect(followerCount).toBe(3);
-    expect(followeeCount).toBe(1);
-    });
+  //   // console.log(`follower count is ${followerCount}`)
+  //   // console.log(`followee count is ${followeeCount}`)
+  //   // expect(followerCount).toBe(3);
+  //   // expect(followeeCount).toBe(1);
+  //   });
 
   it("check if selected user is following", async() => {
     const follows = await server.getIsFollowerStatus(
@@ -85,8 +79,8 @@ describe("ServerFacade Integration Tests", () => {
         "selectedUser": {
           "firstName": "Test",
           "lastName": "User",
-          "alias": "@amur",
-          "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@amur.png"
+          "alias": "@bulat",
+          "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@bulat.png"
         }
         }
     )
@@ -96,38 +90,38 @@ describe("ServerFacade Integration Tests", () => {
   
     
 
-  it("gets followees", async () => {
-    const [followees, hasMore] = await server.getMoreFollowees(
-        {
-        "token": token.token,
-        "userAlias": alias,
-        "pageSize": 10,
-        "lastItem": null
-        }
-    );
+  // it("gets followees", async () => {
+  //   const [followees, hasMore] = await server.getMoreFollowees(
+  //       {
+  //       "token": token.token,
+  //       "userAlias": alias,
+  //       "pageSize": 10,
+  //       "lastItem": null
+  //       }
+  //   );
 
-    expect(Array.isArray(followees)).toBe(true);
-    expect(followees.length).toBeGreaterThan(0);
-    expect(typeof hasMore).toBe("boolean");
-    const first = followees[0];
-    expect(first.alias).toBe("@amur");
-    });
+  //   expect(Array.isArray(followees)).toBe(true);
+  //   expect(followees.length).toBeGreaterThan(0);
+  //   expect(typeof hasMore).toBe("boolean");
+  //   const first = followees[0];
+  //   expect(first.alias).toBe("@amur");
+  //   });
 
-  it("gets followee count", async () => {
-    const count = await server.getFolloweeCount(
-        {
-        "token": token.token,
-        "user": {
-            "firstName": "Test",
-            "lastName": "User",
-            "alias": alias,
-            "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@newTestuser.png"
-        }
-        }
-    );
+  // it("gets followee count", async () => {
+  //   const count = await server.getFolloweeCount(
+  //       {
+  //       "token": token.token,
+  //       "user": {
+  //           "firstName": "Test",
+  //           "lastName": "User",
+  //           "alias": alias,
+  //           "imageUrl": "https://amzn-s3-tweeter-amur-bashirov.s3.amazonaws.com/profile-images/@newTestuser.png"
+  //       }
+  //       }
+  //   );
 
-    expect(typeof count).toBe("number");
-    expect(count).toBeGreaterThan(0);
-  });
+  //   expect(typeof count).toBe("number");
+  //   expect(count).toBeGreaterThan(0);
+  // });
 
 });

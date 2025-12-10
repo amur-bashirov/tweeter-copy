@@ -11,4 +11,5 @@ export interface FeedDao {
     pageSize: number,
     lastTimestamp: number | null
   ): Promise<{ statuses: StatusDto[]; hasMore: boolean }>;
+  addStatusesToFeedBatch(items: { followerAlias: string; status: StatusDto }[]): Promise<void>;
 }

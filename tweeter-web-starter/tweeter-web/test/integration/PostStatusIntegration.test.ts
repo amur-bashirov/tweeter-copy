@@ -7,6 +7,18 @@ import { PostPresenter, PostView } from "../../src/presenters/PostPresenter";
 
 jest.setTimeout(20000);
 
+function generateRandomStringSimple(length: number): string {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
+
 describe("Post Status Integration Test", () => {
   let server: ServerFacade;
 
@@ -38,30 +50,31 @@ describe("Post Status Integration Test", () => {
     }
   });
 
-  it("posts a status and it appears in the user's story", async () => {
+  it("posts a status and sees it appear in story", async () => {
     const mockView = mock<PostView>();
     const viewInstance = instance(mockView);
 
-    // We DO NOT mock StatusService.postStatus
-    // because the test must perform the real posting.
-
+    // Real service
     const realStatusService = new StatusService();
 
-    // But the Presenter normally creates its own StatusService
-    // so we override it:
+    // Presenter with real service
     const presenter = new PostPresenter(viewInstance);
-    // @ts-ignore private override
+
+    // Override private field
+    // (TypeScript will allow this with @ts-ignore)
+    // eslint-disable-next-line
+    // @ts-ignore
     presenter.statusService = realStatusService;
 
-    const statusText = "Hello from automated test!";
+    const statusText = generateRandomStringSimple(10);
 
-    // STEP 1 — ACT: call presenter.postStatus
-    await presenter.submitPost(token, "hey", user);
+    // POST the status
+    await presenter.submitPost(token, statusText, user);
 
-    // STEP 2 — VERIFY PRESENTER CALLED VIEW
-    verify(mockView.displayInfoMessage("Successfully Posted!", 10)).once();
+    // Presenter UI logic check
+    verify(mockView.displayInfoMessage("Status posted!", 2000)).once();
 
-    // STEP 3 — VERIFY STORY UPDATED
+    // NOW VERIFY BACKEND UPDATED STORY
     const [story, hasMore] = await server.loadMoreStoryItems({
       token: token.token,
       userAlias: user.alias,
