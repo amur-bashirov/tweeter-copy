@@ -5,6 +5,7 @@ const feedDao = new DynamoFeedDao();
 
 export const add = async (event: any) => {
   for (const record of event.Records) {
+    console.log("Processing record");
     const body = JSON.parse(record.body);
 
     const followers: string[] = body.followers;
@@ -17,6 +18,11 @@ export const add = async (event: any) => {
     }));
 
     // Use your existing batch method
-    await feedDao.addStatusesToFeedBatch(items);
+    try {
+        await feedDao.addStatusesToFeedBatch(items);
+    } catch (e) {
+        console.error("Batch write failed:", e);
+        throw e;
+    }
   }
 }

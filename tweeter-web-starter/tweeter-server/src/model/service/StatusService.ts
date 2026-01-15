@@ -81,7 +81,7 @@ export class StatusService extends Service{
       const firstHalf = followers.slice(0, mid);
       const secondHalf = followers.slice(mid);
 
-      const CHUNK_SIZE = 1000; // safe for 256KB limit
+      const CHUNK_SIZE = 100; // safe for 256KB limit
 
       for (const chunk of this.chunk(firstHalf, CHUNK_SIZE)) {
         await this.primaryQueue.enqueueFollowers(chunk, newStatus);

@@ -1,7 +1,9 @@
 import { StatusDto, UserDto } from "tweeter-shared";
 import { FeedDao } from "../interfaces/FeedDao";
-import { DynamoDBClient, QueryCommand, PutItemCommand, BatchWriteItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, QueryCommand, PutItemCommand} from "@aws-sdk/client-dynamodb";
 import { BatchWriteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { BatchWriteItemCommand, WriteRequest } from "@aws-sdk/client-dynamodb";
+
 export class DynamoFeedDao implements FeedDao{
 
       private client: DynamoDBDocumentClient;
@@ -28,34 +30,61 @@ export class DynamoFeedDao implements FeedDao{
         }
         await this.client.send(new PutItemCommand(params))
     }
+    async addStatusesToFeedBatch(
+    items: { followerAlias: string; status: StatusDto }[]
+    ): Promise<void> {
+        const TABLE = "FeedsTable";
+        const MAX_BATCH = 25;
 
-    async addStatusesToFeedBatch(items: { followerAlias: string; status: StatusDto }[]) {
-        const requests = items.map(i => ({
+        console.log("Starting batch write. Total items:", items.length);
+
+        const allRequests: WriteRequest[] = items.map(i => ({
             PutRequest: {
-                Item: {
-                    userAlias: { S: i.followerAlias },
-                    authorAlias: { S: i.status.user.alias },
-                    authorFirstName: { S: i.status.user.firstName },
-                    authorLastName: { S: i.status.user.lastName },
-                    authorImageUrl: { S: i.status.user.imageUrl },
-                    timestamp: { N: i.status.timestamp.toString() },
-                    text: { S: i.status.post }
-                }
+            Item: {
+                userAlias: { S: i.followerAlias },
+                authorAlias: { S: i.status.user.alias },
+                authorFirstName: { S: i.status.user.firstName },
+                authorLastName: { S: i.status.user.lastName },
+                authorImageUrl: { S: i.status.user.imageUrl },
+                timestamp: { N: i.status.timestamp.toString() },
+                text: { S: i.status.post }
+            }
             }
         }));
 
-        // DynamoDB BatchWrite max = 25 items
-        while (requests.length > 0) {
-            const batch = requests.splice(0, 25);
+        for (let i = 0; i < allRequests.length; i += MAX_BATCH) {
+            let batch: WriteRequest[] = allRequests.slice(i, i + MAX_BATCH);
+            let attempt = 0;
 
-            await this.client.send(
+            console.log(`Writing chunk ${i / MAX_BATCH + 1}, size=${batch.length}`);
+
+            while (batch.length > 0) {
+            attempt++;
+            console.log(`Attempt ${attempt}, sending ${batch.length} items`);
+
+            const result = await this.client.send(
                 new BatchWriteItemCommand({
-                    RequestItems: {
-                        FeedsTable: batch
-                    }
+                RequestItems: {
+                    [TABLE]: batch
+                }
                 })
             );
+
+            const unprocessed = result.UnprocessedItems?.[TABLE] ?? [];
+
+            console.log(
+                `Attempt ${attempt}: unprocessed = ${unprocessed.length}`
+            );
+
+            batch = unprocessed as WriteRequest[];
+
+            if (batch.length > 0) {
+                await new Promise(res => setTimeout(res, 50));
+            }
+            }
         }
+
+        console.log("✅ Batch write fully completed");
     }
 
 

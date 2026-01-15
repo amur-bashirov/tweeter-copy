@@ -10,7 +10,7 @@ capabilities = "CAPABILITY_NAMED_IAM"
 image_repositories = []
 resolve_s3 = true
 s3_prefix = "tweeter-server"
-disable_rollback = false
+disable_rollback = true
 
 [default.global.parameters]
 region = "us-east-1"
