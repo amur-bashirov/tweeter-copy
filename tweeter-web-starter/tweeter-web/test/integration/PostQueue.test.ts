@@ -53,8 +53,6 @@ describe("Post Status Integration Test", () => {
   it("posts a status and sees it appear in story", async () => {
     const mockView = mock<PostView>();
     const viewInstance = instance(mockView);
-
-    // Real service
     const realStatusService = new StatusService();
 
     // Presenter with real service
